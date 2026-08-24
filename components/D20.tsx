@@ -28,10 +28,8 @@ export default function D20() {
   }, []);
 
   return (
-    <div className="mt-8 flex flex-col items-center gap-5 rounded-2xl border border-dashed border-line bg-surface/60 p-8 text-center">
-      <p className="font-mono text-[11px] uppercase tracking-widest text-faint">
-        roll for a random fact about me
-      </p>
+    <div className="mt-10 flex flex-col items-center gap-5 border border-dashed border-line p-10 text-center">
+      <p className="microlabel">roll for a random fact about me</p>
       <motion.button
         onClick={roll}
         whileHover={{ scale: 1.06 }}
@@ -45,10 +43,10 @@ export default function D20() {
         aria-label="Roll the d20"
         className="relative h-24 w-24"
       >
-        <svg viewBox="0 0 100 100" className="h-full w-full drop-shadow-md">
+        <svg viewBox="0 0 100 100" className="h-full w-full">
           <polygon
             points="50,3 91,26 91,74 50,97 9,74 9,26"
-            className="fill-copper/15 stroke-copper"
+            className="fill-copper/10 stroke-copper"
             strokeWidth="2.5"
             strokeLinejoin="round"
           />
@@ -66,7 +64,7 @@ export default function D20() {
           <line x1="50" y1="97" x2="50" y2="82" className="stroke-copper/40" strokeWidth="1" />
           <text
             x="50"
-            y="56"
+            y="57"
             textAnchor="middle"
             className="fill-copper font-mono"
             fontSize="24"

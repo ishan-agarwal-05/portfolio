@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
-import { Fraunces, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Instrument_Serif, Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import CommandPalette from "@/components/CommandPalette";
 
-const display = Fraunces({
+const display = Instrument_Serif({
   subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
   variable: "--font-display",
-  axes: ["opsz"],
 });
-const sans = Instrument_Sans({ subsets: ["latin"], variable: "--font-sans" });
-const mono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-mono",
-});
+const sans = Archivo({ subsets: ["latin"], variable: "--font-sans" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
   title: {
@@ -23,14 +20,20 @@ export const metadata: Metadata = {
     template: "%s · Ishan Agarwal",
   },
   description:
-    "Final-year NUS Computer Science student. Backend, platform and applied AI — including six months of digital twin simulation tooling at Hyundai's Singapore R&D centre. Graduating May 2027.",
-  metadataBase: new URL("https://ishanagarwal.dev"),
+    "Final-year NUS Computer Science student. Robotics simulation, backend platforms and applied AI — including six months of digital twin tooling at Hyundai's Singapore R&D centre. Graduating May 2027.",
+  metadataBase: new URL("https://ishan-agarwal.com"),
   icons: { icon: "/favicon.svg" },
   openGraph: {
     title: "Ishan Agarwal — Software Engineer",
     description:
       "Software that has to earn its numbers. NUS CS 2027 · robotics simulation, backend, applied AI.",
+    url: "https://ishan-agarwal.com",
+    siteName: "Ishan Agarwal",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ishan Agarwal — Software Engineer",
   },
 };
 

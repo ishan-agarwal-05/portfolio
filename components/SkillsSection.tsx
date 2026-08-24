@@ -6,23 +6,18 @@ export default function SkillsSection() {
   return (
     <section id="skills" className="mx-auto max-w-content px-5 py-24">
       <SectionHeading
-        index="04"
+        index="04 / toolbox"
         title="Toolbox"
         sub="Everything here has shipped something above — no keyword stuffing."
       />
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-10 sm:grid-cols-2">
         {skills.map((g, i) => (
-          <Reveal key={g.group} delay={i * 0.05}>
-            <div className="rounded-2xl border border-line bg-surface p-6">
-              <h3 className="font-mono text-[11px] uppercase tracking-widest text-copper">
-                {g.group}
-              </h3>
-              <div className="mt-4 flex flex-wrap gap-2">
+          <Reveal key={g.group} delay={i * 0.04}>
+            <div>
+              <h3 className="microlabel border-b border-line pb-2 text-copper">{g.group}</h3>
+              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
                 {g.items.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded-full border border-line px-3 py-1 text-sm text-muted transition-colors hover:border-copper hover:text-copper"
-                  >
+                  <span key={s} className="font-mono text-[13px] text-muted">
                     {s}
                   </span>
                 ))}

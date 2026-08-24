@@ -53,12 +53,12 @@ export default function FitChecker() {
         }}
         rows={9}
         placeholder="Paste the full job description here…"
-        className="mt-8 w-full rounded-2xl border border-line bg-surface p-5 text-sm leading-relaxed text-ink outline-none transition-colors placeholder:text-faint focus:border-copper"
+        className="mt-8 w-full border border-line bg-surface p-5 text-sm leading-relaxed text-ink outline-none transition-colors placeholder:text-faint focus:border-copper"
       />
       <button
         onClick={() => setSubmitted(true)}
         disabled={jd.trim().length < 30}
-        className="mt-4 rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-4 bg-ink px-6 py-3 text-sm font-medium text-paper transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Check the fit
       </button>
@@ -73,7 +73,7 @@ export default function FitChecker() {
           transition={{ duration: 0.4 }}
           className="mt-12"
         >
-          <div className="flex items-center gap-4 rounded-2xl border border-line bg-surface p-6">
+          <div className="flex items-center gap-4 border border-line bg-surface p-6">
             <Sparkles className="text-copper" size={22} />
             <div>
               <div className="font-display text-2xl font-semibold text-ink">
@@ -97,12 +97,12 @@ export default function FitChecker() {
                 {result.matched.map((m) => (
                   <li
                     key={m.name}
-                    className="rounded-xl border border-line bg-surface p-4"
+                    className="border border-line bg-surface p-4"
                   >
                     <div className="flex items-center gap-2">
                       <Check size={14} className="text-moss" />
                       <span className="font-medium text-ink">{m.name}</span>
-                      <span className="rounded-full border border-line px-2 py-0.5 font-mono text-[10px] text-faint">
+                      <span className="border border-line px-2 py-0.5 font-mono text-[10px] text-faint">
                         {levelLabel[m.level]}
                       </span>
                     </div>
@@ -127,7 +127,7 @@ export default function FitChecker() {
               </h2>
               <ul className="mt-4 space-y-3">
                 {result.gaps.map((g) => (
-                  <li key={g.label} className="rounded-xl border border-dashed border-line p-4">
+                  <li key={g.label} className="border border-dashed border-line p-4">
                     <div className="flex items-center gap-2">
                       <AlertTriangle size={14} className="text-copper" />
                       <span className="font-medium text-ink">{g.label}</span>

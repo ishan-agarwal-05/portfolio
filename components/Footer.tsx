@@ -3,26 +3,25 @@ import { site } from "@/lib/data";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line/60">
+    <footer className="border-t-2 border-ink">
       <div className="mx-auto flex max-w-content flex-col items-start justify-between gap-6 px-5 py-10 sm:flex-row sm:items-center">
         <div>
-          <p className="font-display text-lg text-ink">
-            {site.name}
-            <span className="text-copper">.</span>
+          <p className="font-display text-2xl italic text-ink">
+            Ishan Agarwal<span className="not-italic text-copper">.</span>
           </p>
-          <p className="mt-1 text-sm text-faint">{site.availability}</p>
+          <p className="microlabel mt-1.5">{site.availability}</p>
         </div>
-        <div className="flex flex-wrap gap-5 text-sm text-muted">
-          <a href={`mailto:${site.email}`} className="link-und">
+        <div className="flex flex-wrap gap-5 font-mono text-[12px] uppercase tracking-wider text-muted">
+          <a href={`mailto:${site.email}`} className="transition-colors hover:text-copper">
             Email
           </a>
-          <a href={site.linkedin} target="_blank" rel="noreferrer" className="link-und">
+          <a href={site.linkedin} target="_blank" rel="noreferrer" className="transition-colors hover:text-copper">
             LinkedIn
           </a>
-          <a href={site.resume} target="_blank" rel="noreferrer" className="link-und">
+          <a href={site.resume} target="_blank" rel="noreferrer" className="transition-colors hover:text-copper">
             Resume
           </a>
-          <Link href="/contact" className="link-und">
+          <Link href="/contact" className="transition-colors hover:text-copper">
             Contact
           </Link>
         </div>

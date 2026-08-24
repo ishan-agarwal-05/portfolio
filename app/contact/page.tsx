@@ -60,7 +60,7 @@ export default function ContactPage() {
               href={c.href}
               target={c.href.startsWith("mailto") ? undefined : "_blank"}
               rel="noreferrer"
-              className="group block h-full rounded-2xl border border-line bg-surface p-6 transition-all hover:-translate-y-1 hover:border-copper/60 hover:shadow-md"
+              className="group block h-full border border-line bg-surface p-6 transition-all hover:-translate-y-1 hover:border-copper/60 hover:shadow-md"
             >
               <c.icon size={18} className="text-copper" />
               <div className="mt-3 font-display text-lg font-semibold text-ink group-hover:text-copper">

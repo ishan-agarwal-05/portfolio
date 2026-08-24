@@ -138,7 +138,7 @@ export default function CommandPalette() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: -8 }}
             transition={{ duration: 0.18 }}
-            className="w-full max-w-lg overflow-hidden rounded-xl border border-line bg-surface shadow-2xl"
+            className="w-full max-w-lg overflow-hidden border border-line bg-surface shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-2 border-b border-line px-4">
@@ -172,7 +172,7 @@ export default function CommandPalette() {
                     <button
                       onMouseEnter={() => setActive(i)}
                       onClick={() => run(item)}
-                      className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors ${
                         i === active ? "bg-copper/10 text-copper" : "text-muted"
                       }`}
                     >
