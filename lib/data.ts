@@ -266,7 +266,7 @@ export const caseStudies: CaseStudy[] = [
     ],
     stack: ["PyTorch", "Hugging Face Transformers", "RoBERTa", "Sentence-BERT"],
     repo: "https://github.com/arshinsikka/CS4248_G02_QA",
-    repoNote: "group repo · contributor",
+    repoNote: "group repo · 14 of 18 commits mine",
     summary:
       "An error-analysis-first NLP project (team of five): instead of throwing a bigger model at SQuAD, we measured where the headroom actually was and spent compute only there. Fine-tuned RoBERTa-base to 84.28 EM / 90.93 F1, then added a bi-encoder reranking layer that activates only when the model's own confidence margin says it might be wrong.",
     sections: [
@@ -336,8 +336,8 @@ export const caseStudies: CaseStudy[] = [
       { value: "e2e", label: "audio → transcript → structured notes pipeline" },
     ],
     stack: ["Python", "Celery", "Redis", "FFmpeg", "React", "LLM APIs", "Alembic"],
-    repo: "https://github.com/arshinsikka/lectureai.co",
-    repoNote: "landing-site repo · product repo private",
+    repo: "https://github.com/arshinsikka/lectureai-mvp",
+    repoNote: "on a co-founder's account",
     summary:
       "The most instructive project I've done, because it failed for a reason worth understanding: the product worked, and the market could not adopt it. Three co-founders, ten months, a real pipeline, real customer discovery, and a deliberate ending.",
     sections: [
