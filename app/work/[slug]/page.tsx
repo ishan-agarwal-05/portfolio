@@ -44,7 +44,11 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
       </Reveal>
 
       <Reveal delay={0.06}>
-        <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden border border-line bg-line sm:grid-cols-4">
+        <div
+          className={`mt-10 grid grid-cols-2 gap-px overflow-hidden border border-line bg-line ${
+            cs.metrics.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-4"
+          }`}
+        >
           {cs.metrics.map((m) => (
             <div key={m.label} className="bg-surface p-4">
               <div className="font-mono text-lg font-semibold text-copper">{m.value}</div>
