@@ -441,7 +441,7 @@ export const caseStudies: CaseStudy[] = [
     org: "ishan-agarwal.com",
     period: "Aug 2026",
     oneLiner:
-      "The site you're reading, Next.js, statically generated, with a command palette, a client-side JD matcher, an AI agent that answers questions about me, and a d20.",
+      "The site you're reading. Next.js, statically generated, with a command palette, an AI agent that answers questions about me, and a d20 that knows twenty things.",
     metrics: [
       { value: "100%", label: "static pages, no server except the agent" },
       { value: "⌘K", label: "command palette over everything" },
@@ -454,8 +454,8 @@ export const caseStudies: CaseStudy[] = [
       {
         heading: "Decisions",
         body: [
-          "All content lives in one typed TypeScript data model, case studies, experience, honours, even the d20 facts, so the pages, the command palette index, the JD matcher's evidence links and the agent's knowledge all derive from the same source of truth. Add a project once, and every surface knows about it.",
-          "The JD matcher runs entirely client-side: paste a job description and it maps keywords to evidence with links, and honestly lists the gaps. The ask-me agent is the one server-side piece, a rate-limited API route over the Claude API with a system prompt built from the same data model. Light and dark themes are hand-built with CSS variables; the type is Instrument Serif over Archivo with JetBrains Mono for the machinery.",
+          "All content lives in one typed TypeScript data model, case studies, experience, honours, even the d20 facts, so the pages, the command palette index and the agent's knowledge all derive from the same source of truth. Add a project once, and every surface knows about it.",
+          "The ask-me agent is the only server-side piece: a rate-limited API route over the Claude API whose system prompt is generated from that same data model, so it can never claim something the site doesn't say. Light and dark themes are hand-built with CSS variables rather than a component library, and the type is Newsreader over Hanken Grotesk with JetBrains Mono for the machinery.",
         ],
       },
     ],
@@ -635,7 +635,6 @@ export const paletteIndex = [
   { label: "Toolbox", href: "/#skills", group: "Sections" },
   { label: "Beyond the Terminal", href: "/#beyond", group: "Sections" },
   { label: "Ask the agent", href: "/ask", group: "Pages" },
-  { label: "Match a Job Description", href: "/fit", group: "Pages" },
   { label: "Contact", href: "/contact", group: "Pages" },
   ...caseStudies.map((c) => ({
     label: c.title,

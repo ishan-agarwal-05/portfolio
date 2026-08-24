@@ -73,20 +73,20 @@ export default function Hero() {
             </motion.div>
           </div>
           <motion.div variants={item} className="hidden lg:block">
-            <div className="relative border border-line bg-surface p-2">
+            <figure className="relative">
               <Image
                 src="/portrait.jpg"
                 alt="Ishan Agarwal"
-                width={300}
-                height={400}
+                width={420}
+                height={560}
                 priority
-                className="h-[340px] w-[255px] object-cover object-top grayscale transition-all duration-500 hover:grayscale-0"
+                className="h-[400px] w-[300px] object-cover"
               />
-              <div className="flex items-center justify-between px-1 pt-2">
-                <span className="microlabel">fig. 01, the author</span>
-                <span className="microlabel text-copper">SG</span>
-              </div>
-            </div>
+              <figcaption className="microlabel mt-2 flex items-center justify-between">
+                <span>Shibuya Sky, Tokyo</span>
+                <span className="text-copper">based in SG</span>
+              </figcaption>
+            </figure>
           </motion.div>
         </div>
         <motion.div

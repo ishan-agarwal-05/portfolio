@@ -5,7 +5,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: site.url, priority: 1 },
     { url: `${site.url}/ask` },
-    { url: `${site.url}/fit` },
     { url: `${site.url}/contact` },
     ...caseStudies.map((c) => ({ url: `${site.url}/work/${c.slug}` })),
   ];

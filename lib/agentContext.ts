@@ -40,5 +40,5 @@ ${toolbox}
 ## Beyond work
 ${personal}
 
-Site features you can mention: the command palette (Cmd-K), the JD fit-checker at /fit, the d20 that rolls random facts, and the detailed article pages.`;
+Site features you can mention: the command palette (Cmd-K), the d20 that rolls random facts, and the detailed article pages.`;
 }
