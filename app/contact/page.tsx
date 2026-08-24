@@ -26,9 +26,9 @@ const channels = [
   {
     icon: FolderGit2,
     label: "GitHub",
-    value: "coming soon",
+    value: "ishan-agarwal-05",
     href: site.github,
-    note: "Being cleaned up, repos for the projects here are on their way.",
+    note: "Currently being tidied up. Several project repos are still private or live under a teammate's account.",
   },
   {
     icon: FileDown,

@@ -5,7 +5,6 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { caseStudies } from "@/lib/data";
 import Reveal from "@/components/Reveal";
 import ScrollProgress from "@/components/ScrollProgress";
-import CodegenDiagram from "@/components/CodegenDiagram";
 
 export function generateStaticParams() {
   return caseStudies.map((c) => ({ slug: c.slug }));
@@ -46,12 +45,16 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
 
       <Reveal delay={0.06}>
         <div
-          className={`mt-10 grid grid-cols-2 gap-px overflow-hidden border border-line bg-line ${
-            cs.metrics.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-4"
+          className={`mt-10 grid grid-cols-2 gap-4 ${
+            cs.metrics.length === 2
+              ? "sm:grid-cols-2"
+              : cs.metrics.length === 3
+                ? "sm:grid-cols-3"
+                : "sm:grid-cols-4"
           }`}
         >
           {cs.metrics.map((m) => (
-            <div key={m.label} className="bg-surface p-4">
+            <div key={m.label} className="border border-line bg-surface p-4">
               <div className="font-mono text-lg font-semibold text-copper">{m.value}</div>
               <div className="mt-1 text-[11px] uppercase tracking-wide text-faint">{m.label}</div>
             </div>
@@ -75,12 +78,6 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
           )}
         </div>
       </Reveal>
-
-      {cs.slug === "action-graph-generator" && (
-        <Reveal delay={0.05}>
-          <CodegenDiagram />
-        </Reveal>
-      )}
 
       {cs.slug === "eg1311-robot" && (
         <Reveal delay={0.05}>

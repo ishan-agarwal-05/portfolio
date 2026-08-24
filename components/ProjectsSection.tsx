@@ -13,12 +13,12 @@ export default function ProjectsSection() {
         title="Projects"
         sub="Research, product, hardware, and this site. Every card opens a full write-up; repos are linked where they're public."
       />
-      <div className="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((p, i) => (
           <Reveal key={p.slug} delay={(i % 3) * 0.05} className="h-full">
             <Link
               href={`/work/${p.slug}`}
-              className="group flex h-full flex-col bg-surface p-6 transition-colors hover:bg-copper/5"
+              className="group flex h-full flex-col border border-line bg-surface p-6 transition-colors hover:border-copper/70 hover:bg-copper/5"
             >
               <div className="flex items-baseline justify-between gap-2">
                 <span className="microlabel text-copper">{p.org}</span>

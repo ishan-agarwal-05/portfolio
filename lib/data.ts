@@ -44,44 +44,44 @@ export const caseStudies: CaseStudy[] = [
     title: "Action Graph Code Generator",
     org: "Hyundai Motor Group Innovation Center Singapore",
     role: "Digital Twin & Simulation Engineering Intern",
-    period: "Apr – Jun 2026",
+    period: "Apr, Jun 2026",
     oneLiner:
-      "A code generator that turns Kawasaki AS robot programs into fully wired Isaac Sim control graphs, collapsing an engineer-week of manual wiring per subprogram into seconds.",
+      "A code generator that turns Kawasaki AS robot programs into wired Isaac Sim control graphs, taking a subprogram from about a week of manual work down to an afternoon.",
     metrics: [
-      { value: "1 wk → sec", label: "manual wiring per subprogram" },
+      { value: "1 wk to ~4 h", label: "per subprogram, including review" },
       { value: "40+", label: "subprograms in a single factory cell" },
       { value: "7", label: "generation approaches benchmarked" },
       { value: "4", label: "undocumented API behaviours reverse-engineered" },
     ],
     stack: ["Python", "NVIDIA Isaac Sim", "OmniGraph", "USD", "Kawasaki AS"],
     summary:
-      "HMGICS is building a digital twin of its electric-vehicle factory on NVIDIA Isaac Sim, working toward a software-defined dark factory by 2032. Manually wiring one robot subprogram into an Action Graph took roughly one engineering week, and a single cell has forty or more subprograms across multiple robots. Over the final three months of my internship I scoped, researched and built the proof-of-concept generator that does it in seconds, deterministic, auditable, and designed for an air-gapped network.",
+      "HMGICS is building a digital twin of its electric-vehicle factory on NVIDIA Isaac Sim, working toward a software-defined dark factory by 2032. Wiring one robot subprogram into an Action Graph by hand took roughly an engineering week, and a single cell has forty or more subprograms across multiple robots. Over the last three months of my internship I scoped, researched and built a proof-of-concept generator that does the wiring automatically, so the remaining work is checking it rather than building it.",
     sections: [
       {
         heading: "Scoped alone from a one-line brief",
         body: [
-          "The brief was a single sentence: automate the authoring of Action Graphs from robot programs. No acceptance criteria, no prior art inside the team, no formal spec. I started by documenting the existing manual workflow step-by-step with its pain points, defined the problem boundaries myself, and reviewed them with the team lead before writing any code. This was a different discipline from the feature-driven work of my first three months, open-ended research where the first deliverable is the problem definition itself.",
-          "Before committing to an approach, I formally evaluated seven candidates, deterministic Python generation, a local LLM, an LLM agent over structured documentation, a custom API pipeline, and three others, against predictability, auditability, and compatibility with the air-gapped GPU environment. Deterministic Python with a structured reference documentation suite won. When the output describes the motion of a physical factory robot, being able to explain every generated line beats being clever.",
+          "The brief was a single sentence: automate the authoring of Action Graphs from robot programs. No acceptance criteria, no prior art inside the team, no spec. I started by writing down the existing manual workflow step by step with its pain points, defined the problem boundaries myself, and reviewed them with the team lead before writing any code. That was a different kind of work from my first three months, where the features were already defined.",
+          "Before committing to an approach I evaluated seven candidates: deterministic Python generation, a local LLM, an LLM agent reading structured documentation, a custom API pipeline, and three others. I scored them on predictability, auditability, and whether they could run inside an air-gapped network at all. Deterministic Python won. The output drives the motion of a physical factory robot, so being able to explain every generated line matters more than being clever.",
         ],
       },
       {
         heading: "Ground truth first, generation second",
         body: [
-          "I hand-built a correctly wired compound node for the wiper pick sequence in Isaac Sim and validated it with the senior developer, node structure, joint correction values, fork/join patterns. That baseline became the oracle: every generated graph was diffed against its USD output, byte by byte, until the generator's output was indistinguishable from the hand-made version.",
-          "That diffing surfaced four undocumented OmniGraph behaviours: og.Attribute.set() being runtime-only and silently failing to persist to USD on reload; target and relationship-typed attributes requiring CreateRelationship().SetTargets() instead of the documented setter; Make Array input type resolution silently zeroing values unless sequenced correctly; and og.Controller.connect() simply failing for cross-graph compound port connections, which forced manual relationship authoring. Each was diagnosed by reading the installed extension source directly, no internet in the environment, so no Stack Overflow, just source code and patience.",
-          "All fixes were centralised into a shared helper module (codegen_utils.py) that wraps node creation, wiring, attribute setting and target-prim relationships, so every future generator script inherits the workarounds for free.",
+          "I hand-built a correctly wired compound node for the wiper pick sequence and had the senior developer validate it: node structure, joint correction values, fork and join patterns. That became the reference. Every generated graph was diffed against its USD output until the generated version was indistinguishable from the hand-made one.",
+          "The diffing is what surfaced four undocumented OmniGraph behaviours. og.Attribute.set() turned out to be runtime only, silently failing to persist to USD on reload. Target and relationship-typed attributes needed CreateRelationship().SetTargets() instead of the documented setter. Make Array input types reset values to zero unless the calls were sequenced in a particular order. And og.Controller.connect() simply does not work for cross-graph compound port connections, so those relationships had to be authored manually. Each one was found by reading the installed extension source, since there was no internet in that environment.",
+          "All four workarounds went into a shared helper module, codegen_utils.py, which wraps node creation, wiring, attribute setting and target-prim relationships. Any future generator script gets the fixes without rediscovering them.",
         ],
       },
       {
         heading: "Built to be handed over",
         body: [
-          "The deliverable was never just the generator. Alongside the code I wrote a reference suite covering the node catalogue, API patterns, AS-to-graph translation rules, worked examples, every technical decision with its rejected alternatives, and Kawasaki AS language semantics for code generation, structured so an engineer who has never seen the project can generate a compound node using only the documentation.",
-          "That handover claim was made testable: I drafted a formal User Acceptance Test protocol in which an engineer unfamiliar with the project generates a node with no verbal guidance, documentation only. I also filed a formal internal AI use-case submission for the workflow, and built a suite of diagnostic and inspection scripts to support the team after my internship ended.",
+          "The generator was never the whole deliverable. I wrote a reference suite alongside it covering the node catalogue, the API patterns, the AS-to-graph translation rules, worked examples, every technical decision with the alternatives I rejected, and the parts of Kawasaki AS semantics that matter for code generation.",
+          "To check the documentation actually worked, I drafted a user acceptance test: an engineer who has never seen the project generates a compound node using the documentation alone, with no verbal guidance. I also filed the internal AI use-case submission for the workflow and left behind a set of diagnostic and inspection scripts for the team.",
         ],
       },
     ],
     honest:
-      "This shipped as a validated proof of concept on one subprogram family, not a production system across all forty. The evaluation of LLM-based approaches was constrained by the air-gapped network, with model access, a hybrid approach (deterministic core, LLM for the long tail of AS constructs) is what I would test next.",
+      "This is a validated proof of concept on one subprogram family, not a production system across all forty. Generated graphs still get reviewed by an engineer before they are trusted, which is why the honest figure is about four hours per subprogram rather than the raw runtime. The LLM approaches were also judged under air-gap constraints; with model access I would want to test a hybrid, deterministic for the core and a model for the long tail of AS constructs.",
   },
   {
     slug: "digital-twin-platform",
@@ -120,7 +120,7 @@ export const caseStudies: CaseStudy[] = [
         heading: "The traceability audit",
         body: [
           "The project target: over 80% of simulation assets traceable to identifiers in the factory's physical-parts systems. The report showed roughly 31%, and the working assumption was a code bug. I exported the full scene hierarchy to establish ground truth, 36 physical parts, and cross-referenced every asset against the mapping spreadsheet and the external system records, by hand.",
-          "Result: 16 of 36 traceable (44%), and every single gap was a data completeness issue, not code, identifiers existing in the mapping file but never written into the scene, parts with no identifier information at all, and one asset in the simulation that no external system knew about. I shipped the findings with a prioritised remediation plan per root cause. Proving the absence of a bug is worth as much as fixing one.",
+          "Result: 16 of 36 traceable, or 44%. Every gap was a data problem rather than a code one: identifiers that existed in the mapping file but were never written into the scene, parts with no identifier information at all, and one asset in the simulation that no external system knew about. I wrote it up with a remediation plan ordered by root cause, so the team could fix the data instead of hunting for a bug that was not there.",
         ],
       },
       {
@@ -131,44 +131,53 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     honest:
-      "Two of my original objectives, Nucleus-based file selection and aggregated multi-run reports, were consciously dropped when the action graph automation project proved a higher-priority contribution to the team's scalability needs. Scope honesty over scope theatre.",
+      "Two of my original objectives, Nucleus file selection and aggregated multi-run reports, never got built. Phase 2 moved to the action graph generator instead, which was the more useful thing for the team, but it does mean I finished the internship with two stated goals unmet.",
   },
   {
     slug: "techfour-dms",
     kind: "work",
-    title: "Plug-and-Play Backend Microservices",
+    title: "Reusable Backend Microservices",
     org: "TechFour Engineering Solutions",
     role: "Software Engineering Intern",
-    period: "May – Jul 2025",
+    period: "May, Jul 2025",
     oneLiner:
-      "Three deployed Flask microservices, auth, documents, communications, designed as reusable components for future client projects, with a Flutter client on top.",
+      "Three Flask microservices built as internal building blocks, so the company would stop rewriting user management, document handling and notifications on every new project.",
     metrics: [
       { value: "3", label: "microservices built and deployed" },
-      { value: "100%", label: "endpoints documented in Swagger" },
-      { value: "2", label: "messaging channels integrated (WhatsApp, email)" },
+      { value: "100+", label: "employee company, internal platform work" },
+      { value: "SonarQube", label: "static analysis and security gates" },
+      { value: "OpenAPI", label: "every endpoint documented in Swagger" },
     ],
-    stack: ["Python", "Flask", "Flutter", "MySQL", "JWT", "SonarScanner", "Swagger"],
+    stack: ["Python", "Flask", "Flutter", "MySQL", "JWT", "SonarQube", "Swagger", "GitLab"],
     repo: "https://github.com/ishan-agarwal-05/dms_personal",
+    repoNote: "personal rebuild",
     summary:
-      "TechFour builds software for engineering-sector clients, and every new project kept re-implementing the same foundations. My internship brief was to build those foundations once, properly: a user-management service, a document-management service, and an internal communications service, deliberately designed as plug-and-play components that later client projects could drop in.",
+      "TechFour is a software company of over a hundred people, and it had noticed a pattern: every new project rebuilt the same foundations from scratch. Login, OTP, password reset, file upload, notifications. My internship was to build those once as standalone services with clean APIs, so future projects could pull them in instead of writing them again. There was no external client. The customer was the company's own future codebases.",
     sections: [
       {
-        heading: "The three services",
+        heading: "Three services, built to be reused",
         body: [
-          "User management handles registration, JWT-based authentication with bcrypt password hashing, OTP verification, and password reset flows. Document management handles uploads with metadata validation, date-based organisation, and lifecycle management with an admin dashboard for oversight. The communications service routes internal messages and notifications out through integrated WhatsApp and email APIs, with a cron scheduler for automated sends.",
-          "Backed by MySQL with connection pooling, each service exposes a clean REST surface and owns its own concerns, the point was that a future client project should be able to take the auth service without inheriting the document service.",
+          "The user management service handles registration, JWT authentication with bcrypt hashing, OTP verification and password reset. The document service handles uploads with metadata validation, date-based organisation and lifecycle management behind an admin view. The communication service sends internal notifications out through WhatsApp and email integrations, with a cron scheduler for anything time-triggered. MySQL with connection pooling underneath, Flask on top.",
+          "Designing for reuse changes the work. Each service had to stand on its own, with no assumptions about the app calling it, which meant thinking harder about API surface than I would have for a one-off feature. I also built Flutter web clients against them, which was the fastest way to find out where an API was awkward to consume.",
         ],
       },
       {
-        heading: "The client, and the quality gates",
+        heading: "The process around the code",
         body: [
-          "I shipped the accompanying Flutter web client, responsive Material Design over the three services, covering the user flows and the admin dashboard.",
-          "Two habits from this internship stuck with me. Every endpoint was documented in Swagger as it was built, not after, which changed how I designed the endpoints themselves. And SonarScanner static-analysis quality gates ran on the codebase, which is a very effective way to discover that code you were proud of has a cognitive-complexity score it shouldn't.",
+          "This was my first exposure to engineering process as something deliberate rather than incidental. Work was tracked in Jira. The company had written policies for branch naming, commit messages and branching strategy, and code went through GitLab on a self-hosted instance. Every endpoint was documented in OpenAPI and served through Swagger UI as it was built, not afterwards, which quietly improved the endpoints themselves.",
+          "Quality gates ran through SonarQube with SonarScanner, self-hosted alongside the project. It checks for bugs, code smells and security vulnerabilities, and I kept working through its findings until the services came back clean. Watching a tool flag things I was pleased with is a useful corrective early on.",
+        ],
+      },
+      {
+        heading: "Learning deployment from the person who ran it",
+        body: [
+          "The most valuable part of this internship was where I happened to sit. My desk was next to Sahil Bhoyar, who ran the company's GitLab, infrastructure and deployments. For about a month he taught me something most days: Linux fundamentals, Nginx, reverse proxying, load balancing, how deployments actually reach a server. He would give me something to read up on, then later show me that exact thing running in the production environment.",
+          "That is a kind of knowledge that is hard to get from a course, because the interesting parts are the operational details nobody writes down. It is also why deployment and infrastructure stopped feeling like someone else's job to me.",
         ],
       },
     ],
     honest:
-      "This was a small-team internship in India with direct client-facing pressure, the services shipped and worked, but load testing was minimal and I'd design the OTP flow's rate limiting more defensively today. The public repo is a personal rebuild of the system, not the client codebase.",
+      "By the time I left, the services worked but had no real users, because the platform they were built for was still in development. So I can speak to the design and the code quality, not to how they behaved under production traffic. Load testing was minimal, and knowing what I know now I would have been more defensive about rate limiting on the OTP flow. The public repo is my own rebuild of the system, not company code.",
   },
   {
     slug: "pwc-rag",
@@ -176,63 +185,69 @@ export const caseStudies: CaseStudy[] = [
     title: "RAG Assistant over Internal Knowledge",
     org: "PwC India",
     role: "AI Engineering Intern",
-    period: "Dec 2024 – Jan 2025",
+    period: "Dec 2024, Jan 2025",
     oneLiner:
-      "A retrieval-augmented generation assistant over several hundred internal policy and research documents, so teams could find policy answers and stop repeating research that already existed.",
+      "A short winter internship on a retrieval-augmented assistant over internal policy and research documents, and my first exposure to evaluating an LLM system instead of eyeballing it.",
     metrics: [
-      { value: "100s", label: "of internal documents indexed" },
-      { value: "2", label: "use cases: policy lookup & prior-work discovery" },
+      { value: "5 weeks", label: "winter internship, over the break" },
+      { value: "100s", label: "of internal documents in the corpus" },
+      { value: "LangSmith", label: "tracing and offline evaluation" },
     ],
     stack: ["Python", "LangChain", "LangSmith", "Streamlit", "RAG"],
     summary:
-      "A five-week winter internship with a concrete problem: PwC teams kept re-answering policy questions and re-doing research that another team had already done, because the knowledge lived in several hundred documents nobody could search semantically. I prototyped the retrieval-augmented assistant that changed that.",
+      "PwC teams kept re-answering the same policy questions and redoing research another team had already done, because the knowledge sat in several hundred documents that nobody could search by meaning. The team was building a retrieval-augmented assistant for it, and I joined that effort over the winter break as an intern.",
     sections: [
       {
-        heading: "The pipeline",
+        heading: "What the system did",
         body: [
-          "Built in LangChain: document ingestion and chunking, embedding into a vector store, retrieval, and prompt assembly for grounded answers. The two retrieval modes matched the two use cases, direct policy lookup with the source passage surfaced alongside the answer, and prior-work discovery, where the value isn't the generated text at all but the pointer to the document a team didn't know existed.",
-          "The frontend was Streamlit, deliberately. For an internal prototype whose users were consultants, not engineers, iteration speed on the interface mattered more than polish, and Streamlit let the interface change as fast as the feedback arrived.",
+          "The pipeline was built in LangChain: document ingestion and chunking, embedding into a vector store, retrieval, and prompt assembly for grounded answers. Two modes matched two problems. Policy lookup returned an answer with the source passage next to it. Prior-work discovery was the more interesting one, because the useful output is not the generated text at all, it is the pointer to a document the team did not know existed. The interface was Streamlit, which for an internal prototype used by consultants was the right trade: the UI could change as fast as the feedback arrived.",
         ],
       },
       {
-        heading: "Evaluation before vibes",
+        heading: "Measuring instead of guessing",
         body: [
-          "The part of this project that shaped how I build LLM systems: LangSmith tracing on every chain, and offline evaluation runs instead of eyeballing outputs. Retrieval quality was measured, prompt changes were compared against a fixed question set, and regressions were visible instead of anecdotal. In 2024 that discipline was not yet the default, and watching answers improve measurably, rather than feeling better, was the real lesson of the internship.",
+          "The part that stuck with me was the evaluation discipline. Every chain was traced in LangSmith, and prompt changes were compared against a fixed question set offline rather than judged by reading a few outputs and feeling good. In late 2024 that was not yet standard practice, and seeing the difference between an answer that seems better and an answer that measurably is better changed how I build anything with a model in it.",
         ],
       },
     ],
     honest:
-      "This was a prototype that proved the concept, not a hardened production deployment, access control and document-permission awareness were out of scope, and they are exactly where the hard work would begin. Say 'several hundred documents' to me and I can defend it; the corpus was real.",
+      "I want to be straight about the scope here. This was five weeks, and a real amount of it went to orientation, getting repository access, and understanding a system the team had already started. The winter break sat in the middle of it. The team did substantial work on this; my own contribution was a slice of it, and the lasting value to me was learning how a production-minded LLM pipeline is traced and evaluated, not the volume of code I wrote.",
   },
   {
     slug: "quadrafort-salesforce",
     kind: "work",
-    title: "HR Recruiting on Salesforce",
+    title: "Salesforce, and Learning How to Work",
     org: "Quadrafort Technologies",
     role: "Software Engineering Intern",
-    period: "May – Jul 2024",
+    period: "May, Jul 2024",
     oneLiner:
-      "My first internship: an HR recruiting application built on the Salesforce platform with Apex, plus both Salesforce certifications earned while shipping it.",
+      "Three months in my first year of university: half of it structured self-study, half building an HR recruitment platform on Salesforce with a team of interns, plus both Salesforce certifications.",
     metrics: [
-      { value: "2", label: "Salesforce certifications (Admin & Developer)" },
-      { value: "1st", label: "professional codebase, year one of university" },
+      { value: "2", label: "Salesforce certifications earned" },
+      { value: "3 months", label: "first year of university" },
+      { value: "10", label: "interns on the build, no external client" },
     ],
-    stack: ["Salesforce", "Apex", "SOQL", "Lightning"],
+    stack: ["Salesforce", "Apex", "SOQL", "Lightning", "VS Code"],
     summary:
-      "The summer after my first year at NUS, I joined Quadrafort to build an HR recruiting application on the Salesforce platform, candidate tracking, requisition management, and the workflow automation between them. It was my introduction to enterprise software: opinionated platforms, existing conventions, and code that other people depend on.",
+      "My first internship, taken after first year, when I had almost no professional experience. The first six weeks were deliberately study: Salesforce Trailhead, YouTube, and working out how professional tooling fits together. The rest was building a genuine HR recruitment platform with a team of interns. It was a training project rather than client work, and that is exactly what made it useful.",
     sections: [
       {
-        heading: "Building inside a platform",
+        heading: "The study half",
         body: [
-          "Salesforce development is a different discipline from greenfield coding, you work with the platform's data model, governor limits, and declarative tools, and write Apex only where configuration can't reach. I built the recruiting app's custom objects, Apex logic and workflow automation, and earned both the Salesforce Administrator and Salesforce Developer certifications during the internship itself.",
-          "I also observed the implementation of Domino's India's customer-complaints application up close, my first look at how a real deployment for a client at national scale is planned, staged and shipped.",
+          "I spent roughly the first month and a half learning: Salesforce's own Trailhead platform, video courses, and the platform's data model and conventions. Alongside that I was picking up things that are invisible until someone shows you, like setting up VS Code properly for development. That sounds small. When you arrive in your first year and everyone around you already has a working environment, it is not.",
+        ],
+      },
+      {
+        heading: "The build half",
+        body: [
+          "Ten of us built an HR recruitment platform on Salesforce: application tracking through the hiring stages, and role-based access so an HR manager, a recruiter and an interviewer each see what they should and nothing more, plus the supporting workflow around it. Most of it was low-code, which is the point of the platform, with Apex written where configuration could not reach.",
+          "The other interns were in their fourth year while I was finishing my first, and being the least experienced person in a room is an efficient way to learn. I also got to watch the implementation of Domino's India's customer-complaints application, which was my first sight of how work is actually staged and shipped for a client at national scale.",
         ],
       },
     ],
     honest:
-      "This was a first internship and reads like one, the scope was modest and closely supervised. Its real value was calibration: it taught me what production discipline looks like, and made every later internship legible.",
+      "This was a training placement, not production engineering. There was no customer, the project existed so interns could learn on it, and much of my first six weeks was coursework rather than code. I keep it here because it is where I learned how a professional environment operates, and because the two certifications came out of it, but I would not present it as engineering experience on par with the internships that followed.",
   },
-  // ─────────────────────────── PROJECTS ───────────────────────────
   {
     slug: "qa-reranker",
     kind: "project",
@@ -268,7 +283,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     honest:
-      "+0.12 EM from one dev-set run is small and I would not claim statistical significance from it. The contribution is the headroom analysis and the selective-compute pattern, and the honest accounting of what didn't work.",
+      "+0.12 EM from a single dev-set run is a small number and I would not claim statistical significance from it. What the project is actually worth is the headroom analysis and the idea of spending compute only where the model is unsure. The controls that failed are in the report too.",
   },
   {
     slug: "fake-news-fairness",
@@ -303,7 +318,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     honest:
-      "64.5% absolute accuracy is modest, as it is for published work on this benchmark. The contribution is the 18-way controlled comparison and the fairness measurement, not the headline number. Full disclosure: the report survives; the code does not, it lived on a teammate's laptop and was never pushed. Lesson absorbed permanently.",
+      "64.5% accuracy is modest, though it sits in the same range as published work on LIAR. The value is the 18-way comparison and the fairness measurement rather than the headline number. One thing I have to own: the code is gone. It lived on a teammate's laptop and was never pushed anywhere. Only the report survives.",
   },
   {
     slug: "lectureai",
@@ -314,14 +329,14 @@ export const caseStudies: CaseStudy[] = [
     oneLiner:
       "Co-founded a platform turning lecture recordings into AI-generated study notes. Led full-stack development, ran customer discovery across NUS cohorts, and made the call to wind it down.",
     metrics: [
-      { value: "10 mo", label: "from first commit to wind-down decision" },
+      { value: "3", label: "co-founders, ten months" },
       { value: "e2e", label: "audio → transcript → structured notes pipeline" },
     ],
     stack: ["Python", "Celery", "Redis", "FFmpeg", "React", "LLM APIs", "Alembic"],
     repo: "https://github.com/arshinsikka/lectureai.co",
     repoNote: "landing-site repo · product repo private",
     summary:
-      "The most instructive project I've done, because it failed for a reason worth understanding: the product worked, and the market didn't want it enough. Two co-founders, ten months, a real pipeline, real customer discovery, and a deliberate ending.",
+      "The most instructive project I've done, because it failed for a reason worth understanding: the product worked, and the market could not adopt it. Three co-founders, ten months, a real pipeline, real customer discovery, and a deliberate ending.",
     sections: [
       {
         heading: "Build",
@@ -367,12 +382,12 @@ export const caseStudies: CaseStudy[] = [
         heading: "How it works",
         body: [
           "Users add items from multiple restaurants to a cart, see other open orders at their location, and coordinate through built-in chat to bundle. The matching layer groups compatible orders, same area, overlapping restaurant, close in time, and Socket.IO keeps carts, chat and matches live across clients without refresh. MongoDB stores users, restaurants and orders; Express serves the API; Material-UI keeps the interface out of the way.",
-          "The interesting engineering was in the real-time state: keeping several users' views of a shared, mutating order consistent is a small distributed-systems problem wearing a food-delivery costume.",
+          "The interesting part was the real-time state. Keeping several people looking at the same changing order without anyone seeing a stale version is harder than the feature list makes it sound.",
         ],
       },
     ],
     honest:
-      "Student-project scope: authentication was basic, the matching algorithm was heuristic rather than optimal, and planned features (OAuth, bill splitting, live restaurant data) stayed on the roadmap. The repo currently lives under my former teammate's account, being restored to mine.",
+      "Student-project scope. Authentication was basic, the matching was heuristic rather than optimal, and the planned features like OAuth, bill splitting and live restaurant data never got built. The repo sits under a teammate's account and I am in the process of getting it moved across.",
   },
   {
     slug: "teachers-pet",
@@ -405,7 +420,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     honest:
-      "A course project on a course-provided foundation, the architecture was inherited, not invented. The value was learning to extend someone else's design cleanly, which is most of what professional software work is.",
+      "A course project on a course-provided foundation. The architecture was inherited rather than designed by us, and the feature scope was set by the module. What it taught was how to extend an unfamiliar codebase without breaking it, which turned out to be most of what the internships involved too.",
   },
   {
     slug: "eg1311-robot",
@@ -414,40 +429,69 @@ export const caseStudies: CaseStudy[] = [
     org: "NUS · EG1311 Design & Make",
     period: "Feb, Mar 2025",
     oneLiner:
-      "An Arduino robot that drives an obstacle course, finds its own firing position with an ultrasonic sensor, launches a ping-pong ball from a servo catapult, and reverses out. No remote control.",
+      "An Arduino robot that crosses a bump and a slope, finds its own firing position with an ultrasonic sensor, launches a ping-pong ball over a 30cm wall, and reverses back to the start.",
     metrics: [
-      { value: "3", label: "DC motors on two H-bridges" },
-      { value: "5, 10 cm", label: "ultrasonic firing window" },
-      { value: "0", label: "human input during the run" },
+      { value: "30 cm", label: "wall the ball had to clear" },
+      { value: "3", label: "drive motors on H-bridge control" },
+      { value: "4", label: "wheel prototypes before one worked" },
     ],
-    stack: ["Arduino", "C++", "HC-SR04", "L293D", "Servo", "Fusion 360", "Tinkercad"],
+    stack: ["Arduino", "C++", "HC-SR04", "L293D", "Servo", "Fusion 360", "Laser cutting"],
     summary:
-      "A hardware project in a portfolio of software. The brief was a robot that crosses an obstacle course of bumps and ramps and lands a ping-pong ball over a barrier. The part I care about is that it does this on its own: it ranges the target with an ultrasonic sensor, decides when it is close enough, fires, and backs out. Every layer was ours, from the Fusion 360 model and the soldering to the firmware state machine.",
+      "The course was a 3cm bump, a 10cm slope and a 30cm wall. The robot had to cross all of it, stop at the wall, launch a ping-pong ball over it and reverse back to the start, with no human input. A team of us designed and built it: laser-cut wheels, a polypropylene chassis, a servo catapult and the firmware.",
     sections: [
       {
-        heading: "Sensing instead of guessing",
+        heading: "Sensing instead of counting seconds",
         body: [
-          "The naive version of this project drives forward for a fixed number of seconds and fires. That fails the moment the carpet grips differently or the battery sags, because dead reckoning has no idea where it actually is.",
-          "Instead the robot polls an HC-SR04 ultrasonic sensor every loop, pulsing the trigger for 10 microseconds and timing the echo, then converting to centimetres with the speed of sound and halving it for the round trip. When the reading falls inside a 5 to 10 centimetre window, the robot knows it is in front of the barrier rather than merely somewhere near it.",
+          "The easy version of this drives forward for a fixed time and fires. It fails as soon as the carpet grips differently or the battery sags, because it has no idea where it actually is. Instead the robot pulses an HC-SR04 ultrasonic sensor every loop, times the echo, and converts it to a distance. When the reading enters a narrow band near the wall it stops, waits three seconds for the chassis to settle, sweeps the servo to launch, then reverses.",
+          "Mounting that sensor was its own problem. Too low and the bump or the ramp reads as an obstacle and the robot stops halfway through the course. We raised it on a propylene board braced with two ice-cream sticks, which is not elegant and worked perfectly.",
         ],
       },
       {
-        heading: "The state machine",
+        heading: "Four wheels before one worked",
         body: [
-          "The run is four states and no more: drive forward with all three motors, stop dead and hold for three seconds once the target window is detected, sweep the servo catapult from 40 to 90 degrees to launch, then reverse for ten seconds and halt permanently. The deliberate pause before firing matters, since launching while the chassis is still rocking from the drive throws the ball off line.",
-          "Driving three DC motors in both directions takes six control pins and more current than an Arduino can source, so motor control runs through two L293D H-bridge ICs on a breadboard with a separate 9V supply. The whole circuit was prototyped in Tinkercad before anything was soldered, which is how you find out you are one H-bridge short while it still costs nothing.",
+          "Cardboard wheels at 8cm could not get over the 3cm bump: too small to carry the robot up and over. Laser-cut acrylic at 10cm cleared the bump and ran straight, being identical to each other, but slid helplessly on the slope because acrylic on a ramp has almost no grip. Rubber bands added traction and then peeled off, since the surface is too smooth for hot glue to hold. Anti-slip mat strips finally stuck and gripped, and that was the wheel we ran.",
+          "The ball holder went through the same loop. Flat, the ball fell out whenever the robot tilted. We ended up tilting the holder past 90 degrees from its launch angle, raising it, and giving the rim a curved inward lip: stiff enough to hold the ball through the bumps, soft enough to release it when the servo fires.",
         ],
       },
       {
-        heading: "Debugging across layers",
+        heading: "When the fix is mechanical",
         body: [
-          "Hardware debugging is a different sport. When the robot veers left, the fault could be in the code, the wiring, the weight distribution or the floor, and none of them will tell you which. Serial logging of the live distance reading at every loop was what made the system legible: once you can watch the number the robot is deciding on, a mechanical problem stops looking like a logic problem.",
-          "That habit transferred directly. A year later at HMGICS I validated a code generator by diffing its output against a hand-built baseline, which is the same instinct: get the machine to show you its own ground truth instead of trusting that it agrees with you.",
+          "The robot kept veering right. The cause was not the code: the front-right motor was simply weaker than the other two. We tested motor speeds to confirm it, then corrected it by angling both front wheels very slightly left so the drift cancelled out. A software fix would have been more satisfying and a lot slower.",
+          "Power was the other one. A 9V for the Arduino plus a separate 6V AA pack for the motor driver looked sensible and produced motors that stuttered or refused to spin, because the pack could not deliver enough current. Running a single 9V in parallel to both fixed it and simplified the circuit. Loose twisted wires shorting on the breadboard got replaced with a proper detachable connector.",
         ],
       },
     ],
     honest:
-      "The firing window is a fixed 5 to 10 centimetre band checked once per loop, and the echo timing blocks while it waits. Approach fast enough and the robot can step over the window between two readings and never fire. We tuned the drive speed until that stopped happening, which works but is a calibration, not a fix. A ramped approach speed as the distance closes would have been the right answer.",
+      "The firing window is a fixed distance band checked once per loop, and the echo timing blocks while it waits, so approaching too fast can step over the window between readings and skip the launch. We tuned the drive speed until that stopped happening, which is a calibration rather than a fix. Slowing the approach as the distance closes would have been the right answer, and I would build it that way now.",
+  },
+  {
+    slug: "educrypto",
+    kind: "project",
+    title: "EduCrypto",
+    org: "NUS · CS4236 Computer Security",
+    period: "Aug 2026, in progress",
+    oneLiner:
+      "A cryptography library built up week by week across a semester, alongside attack scripts that break deliberately vulnerable services using it.",
+    metrics: [
+      { value: "in progress", label: "current semester, Y4S1" },
+      { value: "weekly", label: "new primitive, then an attack on it" },
+      { value: "private", label: "code stays closed until the course ends" },
+    ],
+    stack: ["Python", "pytest", "Flask", "cryptography"],
+    repoNote: "private until the semester ends, by course policy",
+    summary:
+      "The running project for CS4236. Each week the module publishes a feature request, a service that uses the library in an unsafe way, and a test suite. You implement the primitive properly, then write the attack that breaks the service using it. By the end of the semester it should add up to a working cryptography package with a matching set of attacks.",
+    sections: [
+      {
+        heading: "Why the structure is the point",
+        body: [
+          "Implementing a cipher and attacking a bad deployment of that same cipher in the same week is a good way to learn that most real failures are not broken maths. They are reused nonces, unauthenticated ciphertext, padding that leaks, and interfaces that make the unsafe call the easy one. Writing both halves makes the gap between correct and safe very concrete.",
+          "The library is structured as a proper installed package with an encoding layer, the primitives, and a separate attacks module, with tests per week. It is early in the semester, so what exists now is the foundation rather than the finished thing.",
+        ],
+      },
+    ],
+    honest:
+      "This is genuinely unfinished, and I am listing it because it is what I am working on right now rather than because it is a finished result. The repository is private and stays that way until the course ends, since the module's policy forbids publishing solutions while the assignment is running. I will link it here once that restriction lifts.",
   },
   {
     slug: "this-site",
@@ -475,7 +519,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     honest:
-      "Designed and built in collaboration with Claude, which feels appropriate for a site with an AI agent on it. The judgement calls, the content and the numbers are mine.",
+      "Built with Claude as a pair, which feels like the honest thing to say on a site that has an AI agent on it. The content, the numbers and the calls about what goes in are mine.",
   },
 ];
 
@@ -487,7 +531,7 @@ export const experiences: Experience[] = [
     location: "Singapore",
     stack: ["Python", "NVIDIA Isaac Sim", "OmniGraph", "USD"],
     summary:
-      "Six months on the simulation team building digital twin tooling for an EV smart factory, shipped the reporting system and three UI extensions, then scoped and built a code generator that collapses an engineer-week of robot-program wiring into seconds.",
+      "Six months on the simulation team building digital twin tooling for an EV smart factory. Shipped the reporting system and three UI extensions, then scoped and built a code generator that takes a robot subprogram from about a week of manual wiring down to an afternoon.",
     articles: [
       { label: "Action Graph Code Generator", slug: "action-graph-generator" },
       { label: "Digital Twin Platform", slug: "digital-twin-platform" },
@@ -500,7 +544,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Python", "Flask", "Flutter", "MySQL"],
     summary:
-      "Built and deployed three reusable backend microservices, auth/OTP, documents, communications, with WhatsApp and email integrations, a Flutter client, SonarScanner quality gates and full Swagger documentation.",
+      "Built three Flask microservices as internal building blocks for a 100-person company that kept rewriting the same foundations: auth and OTP, documents, notifications. SonarQube gates, OpenAPI docs, and a month of evening tutorials on Linux, Nginx and deployment from the engineer who ran the company's infrastructure.",
     articles: [{ label: "Plug-and-Play Microservices", slug: "techfour-dms" }],
   },
   {
@@ -510,7 +554,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Python", "LangChain", "LangSmith", "Streamlit"],
     summary:
-      "Prototyped a retrieval-augmented generation assistant over several hundred internal policy and research documents, with LangSmith tracing and offline evaluation, so quality was measured rather than felt.",
+      "A five-week winter internship on a retrieval-augmented assistant over several hundred internal documents. My first real exposure to tracing and offline evaluation of an LLM pipeline rather than judging it by reading a few answers.",
     articles: [{ label: "RAG Assistant", slug: "pwc-rag" }],
   },
   {
@@ -520,7 +564,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Salesforce", "Apex"],
     summary:
-      "First internship: an HR recruiting application on the Salesforce platform, with both Salesforce Administrator and Developer certifications earned along the way.",
+      "First internship, taken after first year. Six weeks of structured self-study, then an HR recruitment platform built on Salesforce with a team of ten interns. Both Salesforce certifications earned along the way.",
     articles: [{ label: "HR Recruiting on Salesforce", slug: "quadrafort-salesforce" }],
   },
 ];
@@ -586,43 +630,43 @@ export const honours = [
 ];
 
 export const ttrpgSystems = [
-  { name: "D&D 5e", note: "the long campaigns" },
-  { name: "Call of Cthulhu", note: "sanity optional" },
-  { name: "Monster of the Week", note: "one mystery per session" },
-  { name: "FIST", note: "paranormal mercenaries, zero prep" },
+  { name: "D&D 5e", note: "long campaigns" },
+  { name: "Call of Cthulhu", note: "plans falling apart" },
+  { name: "Monster of the Week", note: "one mystery a session" },
+  { name: "FIST", note: "paranormal mercenaries" },
   { name: "Traveller", note: "spreadsheets in space" },
+];
+
+export const reading = [
+  { name: "Lord of the Mysteries", note: "webnovel" },
+  { name: "Shadow Slave", note: "webnovel" },
+  { name: "One Piece", note: "still going" },
+  { name: "SFF", note: "the standing habit" },
 ];
 
 export const beyond = [
   {
     title: "Tabletop RPGs",
-    body: "The hobby I'll talk about longest if you let me. Running a table is systems design with feelings: encounter balance, pacing, improvising within rules, keeping five people engaged for four hours. Played across D&D 5e, Call of Cthulhu, Monster of the Week, FIST and Traveller, each one a different physics engine for stories.",
+    body: "Always at the table, never behind the screen. I play rather than run, which means turning up, reading the room, committing to a character and living with the dice. D&D 5e for the long campaigns, Call of Cthulhu when the plan is meant to fall apart, Monster of the Week for a mystery in one sitting, FIST for paranormal mercenary work with almost no prep, and Traveller for the joy of a spreadsheet in space.",
   },
   {
-    title: "Teaching",
-    body: "Volunteer teacher with Teach SG, and previously with SETU under the Each One Teach One initiative. Explaining something badly is how you find out you didn't understand it.",
+    title: "Reading",
+    body: "Constantly, and not fussy about the form. Science fiction and fantasy, plus a long-running habit with webnovels and manga: Lord of the Mysteries, Shadow Slave, One Piece. Serialised fiction is an interesting thing to follow as an engineer, because you watch a writer maintain state and pay off setup across thousands of chapters, mostly without notes.",
   },
   {
-    title: "Music",
-    body: "Six years of formal Indian classical training, now applied to keyboard. Practice regimes for music and for algorithms turn out to be the same discipline: slow is smooth, smooth is fast.",
+    title: "Travel",
+    body: "Over thirty countries so far, and at least one trip a year with my family. Much of Europe, including Scandinavia and the centre, west and south, along with North America, South Africa and Japan most recently. It is the fastest way I know to find out that the way something is done at home is not the only way it could be done.",
   },
   {
-    title: "Travel & photography",
-    body: "Most recently Japan, Tokyo, Kyoto, Nara, and a convenience-store car park with an unreasonable view of Fuji. The camera comes along everywhere.",
+    title: "Teaching and volunteering",
+    body: "Volunteer teacher with Teach SG, tutoring secondary and JC students, and before that with SETU under the Each One Teach One initiative. I keep coming back to it because teaching is the most reliable way to find the gaps in what you thought you knew, and because the students who most need someone patient rarely have one.",
   },
-];
-
-export const photos = [
-  { src: "/photos/shibuya_sky.jpg", alt: "Above Tokyo at Shibuya Sky", caption: "Shibuya Sky, Tokyo" },
-  { src: "/photos/kyoto.jpg", alt: "The Kamo river in Kyoto at dusk", caption: "Kamo river, Kyoto" },
-  { src: "/photos/nara.jpg", alt: "Making friends with a deer in Nara", caption: "Local resident, Nara" },
-  { src: "/photos/mount_fuji.jpg", alt: "Mount Fuji from a convenience-store car park", caption: "Fuji, from a car park" },
 ];
 
 export const d20Facts = [
-  "I've played D&D 5e, Call of Cthulhu, Monster of the Week, FIST and Traveller, and I will absolutely run a one-shot if you ask.",
+  "I play D&D 5e, Call of Cthulhu, Monster of the Week, FIST and Traveller. Always a player, never the DM.",
   "Natural 20! I once reverse-engineered four undocumented NVIDIA APIs by diffing USD files in an air-gapped network.",
-  "Six years of formal Indian classical music training, now applied to keyboard.",
+  "Six years of formal Indian classical music training, now applied to the keyboard.",
   "All India Rank 21 in the NTSE, India's national talent search examination.",
   "Third place internationally at Odyssey of the Mind in St. Petersburg, I built the robot.",
   "I volunteer as a teacher with Teach SG.",
@@ -637,7 +681,7 @@ export const d20Facts = [
   "Focus areas: Artificial Intelligence and Computer Security.",
   "I wireframe UIs before coding them. It has never once been a waste of time.",
   "State Rank 1 in Uttar Pradesh in VVM, a national science talent search.",
-  "Most recent adventure: Tokyo, Kyoto and Nara, the deer photo in Beyond is real.",
+  "I have been to over thirty countries, and I still travel with my family at least once a year.",
   "This site's entire content lives in one typed data file. The palette, matcher and agent all read from it.",
   "This site has a command palette. Press ⌘K.",
 ];

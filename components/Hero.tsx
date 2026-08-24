@@ -48,6 +48,21 @@ export default function Hero() {
               building digital twin tooling at Hyundai&rsquo;s Singapore R&D centre.
               Every claim on this site links to the work behind it.
             </motion.p>
+            <motion.figure variants={item} className="mt-8 lg:hidden">
+              <Image
+                src="/portrait.jpg"
+                alt="Ishan Agarwal"
+                width={420}
+                height={560}
+                priority
+                className="h-[260px] w-full object-cover object-[center_25%] sm:h-[320px]"
+              />
+              <figcaption className="microlabel mt-2 flex items-center justify-between">
+                <span>Shibuya Sky, Tokyo</span>
+                <span className="text-copper">based in SG</span>
+              </figcaption>
+            </motion.figure>
+
             <motion.div variants={item} className="mt-10 flex flex-wrap items-center gap-3">
               <a
                 href="#work"

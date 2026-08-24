@@ -18,6 +18,9 @@ export default function Footer() {
           <a href={site.linkedin} target="_blank" rel="noreferrer" className="transition-colors hover:text-copper">
             LinkedIn
           </a>
+          <a href={site.github} target="_blank" rel="noreferrer" className="transition-colors hover:text-copper">
+            GitHub
+          </a>
           <a href={site.resume} target="_blank" rel="noreferrer" className="transition-colors hover:text-copper">
             Resume
           </a>
