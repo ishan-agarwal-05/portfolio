@@ -468,30 +468,37 @@ export const caseStudies: CaseStudy[] = [
     slug: "educrypto",
     kind: "project",
     title: "EduCrypto",
-    org: "NUS · CS4236 Computer Security",
+    org: "NUS · CS4236 Cryptography in Practice",
     period: "Aug 2026, in progress",
     oneLiner:
-      "A cryptography library built up week by week across a semester, alongside attack scripts that break deliberately vulnerable services using it.",
+      "A cryptography library built primitive by primitive across a semester, paired each week with an attack that breaks a service using that primitive badly.",
     metrics: [
-      { value: "in progress", label: "current semester, Y4S1" },
-      { value: "weekly", label: "new primitive, then an attack on it" },
-      { value: "private", label: "code stays closed until the course ends" },
+      { value: "in progress", label: "Y4S1, running now" },
+      { value: "weekly", label: "primitive, then the attack on it" },
+      { value: "private", label: "code closed until the course ends" },
     ],
     stack: ["Python", "pytest", "Flask", "cryptography"],
     repoNote: "private until the semester ends, by course policy",
     summary:
-      "The running project for CS4236. Each week the module publishes a feature request, a service that uses the library in an unsafe way, and a test suite. You implement the primitive properly, then write the attack that breaks the service using it. By the end of the semester it should add up to a working cryptography package with a matching set of attacks.",
+      "CS4236 was recently redesigned away from proving theorems and toward using cryptography correctly in real systems: reading an application's security requirements, choosing the right primitive, picking a sound library implementation, and getting the parameters right. The semester's spine is a library called educrypto that I build up week by week, and the reason it sticks is that every primitive I implement, I then have to attack.",
     sections: [
       {
-        heading: "Why the structure is the point",
+        heading: "How the semester is structured",
         body: [
-          "Implementing a cipher and attacking a bad deployment of that same cipher in the same week is a good way to learn that most real failures are not broken maths. They are reused nonces, unauthenticated ciphertext, padding that leaks, and interfaces that make the unsafe call the easy one. Writing both halves makes the gap between correct and safe very concrete.",
-          "The library is structured as a proper installed package with an encoding layer, the primitives, and a separate attacks module, with tests per week. It is early in the semester, so what exists now is the foundation rather than the finished thing.",
+          "Each week the module publishes three things: a feature request with an API and its behavioural requirements, a public pytest suite, and a deliberately vulnerable service that uses the library. I implement the primitive into educrypto so the tests pass, then write the attack that breaks the service built on top of it. Both halves live in the same repository, the library under src/educrypto and the attacks in their own module.",
+          "The vulnerable services are small Flask applications, which is a pointed choice. The bug is never in the mathematics. It is in how the primitive got used: a reused key, a parameter left at its convenient default, ciphertext nobody authenticated, an API that made the unsafe call the easy one.",
+        ],
+      },
+      {
+        heading: "Where it ends up",
+        body: [
+          "By December this should be a working Python cryptography package covering symmetric encryption and its modes, message authentication and hashing, then the public-key half: RSA, Diffie-Hellman key exchange, El Gamal, and digital signatures, each with a matching attack demonstrating the failure mode when it is deployed carelessly. The later part of the course moves toward how these compose into real protocols, and where cryptography sits in modern systems like blockchain and privacy-preserving machine learning.",
+          "It builds on CS2107, the information security module, which is where the threat-modelling half of my thinking came from. This one is the implementation half.",
         ],
       },
     ],
     honest:
-      "This is genuinely unfinished, and I am listing it because it is what I am working on right now rather than because it is a finished result. The repository is private and stays that way until the course ends, since the module's policy forbids publishing solutions while the assignment is running. I will link it here once that restriction lifts.",
+      "This is genuinely unfinished and I am listing it because it is what I am working on now, not because it is a result. Right now it covers the earliest weeks: encoding, the one-time pad and the attack on reusing its key. The repository stays private until the course ends, because the module's policy forbids publishing the library while the assignment is running, and I will link it here once that lifts.",
   },
   {
     slug: "this-site",
@@ -581,6 +588,10 @@ export const skills = [
   {
     group: "AI & Data",
     items: ["Hugging Face Transformers", "LangChain", "LangSmith", "scikit-learn", "XGBoost", "NumPy", "Pandas", "RAG pipelines"],
+  },
+  {
+    group: "Security",
+    items: ["Applied cryptography", "Threat modelling", "SonarQube", "JWT / auth flows", "Secure API design"],
   },
   {
     group: "Simulation & Robotics",
