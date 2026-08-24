@@ -187,66 +187,69 @@ export const caseStudies: CaseStudy[] = [
     role: "AI Engineering Intern",
     period: "Dec 2024, Jan 2025",
     oneLiner:
-      "A short winter internship on a retrieval-augmented assistant over internal policy and research documents, and my first exposure to evaluating an LLM system instead of eyeballing it.",
+      "A retrieval-augmented assistant over several hundred internal policy and research documents, so teams could find answers and stop redoing research that already existed.",
     metrics: [
-      { value: "5 weeks", label: "winter internship, over the break" },
       { value: "100s", label: "of internal documents in the corpus" },
+      { value: "2", label: "retrieval modes: policy lookup, prior work" },
       { value: "LangSmith", label: "tracing and offline evaluation" },
     ],
     stack: ["Python", "LangChain", "LangSmith", "Streamlit", "RAG"],
     summary:
-      "PwC teams kept re-answering the same policy questions and redoing research another team had already done, because the knowledge sat in several hundred documents that nobody could search by meaning. The team was building a retrieval-augmented assistant for it, and I joined that effort over the winter break as an intern.",
+      "PwC teams kept re-answering the same policy questions and redoing research another team had already finished, because the knowledge sat in several hundred documents that nobody could search by meaning. I worked on the retrieval-augmented assistant built to fix that, on a team shipping it for internal use.",
     sections: [
       {
         heading: "What the system did",
         body: [
-          "The pipeline was built in LangChain: document ingestion and chunking, embedding into a vector store, retrieval, and prompt assembly for grounded answers. Two modes matched two problems. Policy lookup returned an answer with the source passage next to it. Prior-work discovery was the more interesting one, because the useful output is not the generated text at all, it is the pointer to a document the team did not know existed. The interface was Streamlit, which for an internal prototype used by consultants was the right trade: the UI could change as fast as the feedback arrived.",
+          "The pipeline was built in LangChain: document ingestion and chunking, embedding into a vector store, retrieval, and prompt assembly for grounded answers. Two modes matched two different problems. Policy lookup returned an answer with the source passage beside it, so the reader could check it. Prior-work discovery was the more interesting one, because the useful output is not the generated text at all, it is the pointer to a document the team did not know existed.",
+          "The interface was Streamlit, which for an internal tool used by consultants was the right call: the UI could change as fast as the feedback arrived, and getting it in front of real users early mattered more than polish.",
         ],
       },
       {
         heading: "Measuring instead of guessing",
         body: [
-          "The part that stuck with me was the evaluation discipline. Every chain was traced in LangSmith, and prompt changes were compared against a fixed question set offline rather than judged by reading a few outputs and feeling good. In late 2024 that was not yet standard practice, and seeing the difference between an answer that seems better and an answer that measurably is better changed how I build anything with a model in it.",
+          "The part that shaped how I build things now was the evaluation discipline. Every chain was traced in LangSmith, and prompt changes were compared against a fixed question set offline rather than judged by reading a few outputs and feeling good about them.",
+          "In late 2024 that was not yet standard practice, and the difference between an answer that seems better and an answer that measurably is better is the whole game once a model is in the loop. I have not built anything with an LLM in it since without setting up evaluation first.",
         ],
       },
     ],
     honest:
-      "I want to be straight about the scope here. This was five weeks, and a real amount of it went to orientation, getting repository access, and understanding a system the team had already started. The winter break sat in the middle of it. The team did substantial work on this; my own contribution was a slice of it, and the lasting value to me was learning how a production-minded LLM pipeline is traced and evaluated, not the volume of code I wrote.",
+      "This was a prototype that proved the concept, not a hardened deployment. Access control and document-permission awareness were out of scope, and that is exactly where the hard engineering would start: a retrieval system that surfaces a document to someone who should not see it is worse than no retrieval system. It was also a short placement on an ongoing team effort, so the design was shared work rather than mine alone.",
   },
   {
     slug: "quadrafort-salesforce",
     kind: "work",
-    title: "Salesforce, and Learning How to Work",
+    title: "HR Recruitment Platform on Salesforce",
     org: "Quadrafort Technologies",
     role: "Software Engineering Intern",
     period: "May, Jul 2024",
     oneLiner:
-      "Three months in my first year of university: half of it structured self-study, half building an HR recruitment platform on Salesforce with a team of interns, plus both Salesforce certifications.",
+      "Three months building an HR recruitment platform on Salesforce with application tracking and role-based access, plus both Salesforce certifications earned along the way.",
     metrics: [
+      { value: "3 months", label: "first professional placement" },
       { value: "2", label: "Salesforce certifications earned" },
-      { value: "3 months", label: "first year of university" },
-      { value: "10", label: "interns on the build, no external client" },
+      { value: "10", label: "engineers on the build team" },
     ],
     stack: ["Salesforce", "Apex", "SOQL", "Lightning", "VS Code"],
     summary:
-      "My first internship, taken after first year, when I had almost no professional experience. The first six weeks were deliberately study: Salesforce Trailhead, YouTube, and working out how professional tooling fits together. The rest was building a genuine HR recruitment platform with a team of interns. It was a training project rather than client work, and that is exactly what made it useful.",
+      "My first internship, taken after first year. It began with structured training on the Salesforce platform, its data model and its conventions, then moved into building a genuine HR recruitment platform with the rest of the team. Three months, and the placement that taught me how a professional engineering environment actually runs.",
     sections: [
       {
-        heading: "The study half",
+        heading: "Getting fluent in the platform",
         body: [
-          "I spent roughly the first month and a half learning: Salesforce's own Trailhead platform, video courses, and the platform's data model and conventions. Alongside that I was picking up things that are invisible until someone shows you, like setting up VS Code properly for development. That sounds small. When you arrive in your first year and everyone around you already has a working environment, it is not.",
+          "Salesforce development is its own discipline. You work within the platform's data model, its governor limits and its declarative tooling, and you write Apex where configuration cannot reach, which means learning the platform properly before you can build anything real. I worked through Salesforce's Trailhead curriculum and earned both the Administrator and Developer certifications during the internship.",
+          "Alongside that came the things nobody teaches you explicitly: setting up a development environment properly, using version control the way a team expects, and how work moves from a request to something shipped.",
         ],
       },
       {
-        heading: "The build half",
+        heading: "The platform we built",
         body: [
-          "Ten of us built an HR recruitment platform on Salesforce: application tracking through the hiring stages, and role-based access so an HR manager, a recruiter and an interviewer each see what they should and nothing more, plus the supporting workflow around it. Most of it was low-code, which is the point of the platform, with Apex written where configuration could not reach.",
-          "The other interns were in their fourth year while I was finishing my first, and being the least experienced person in a room is an efficient way to learn. I also got to watch the implementation of Domino's India's customer-complaints application, which was my first sight of how work is actually staged and shipped for a client at national scale.",
+          "The team built an HR recruitment application on Salesforce: candidate application tracking through each hiring stage, and role-based access so that an HR manager, a recruiter and an interviewer each see exactly what their role should and nothing beyond it. Permissions were the part that needed the most care, because in a hiring system the access model is the product as much as the workflow is.",
+          "Most of the team were final-year students while I was finishing my first, which is an efficient way to learn quickly. I also got to watch the implementation of Domino's India's customer-complaints application up close, my first look at how a client deployment at national scale is planned and staged.",
         ],
       },
     ],
     honest:
-      "This was a training placement, not production engineering. There was no customer, the project existed so interns could learn on it, and much of my first six weeks was coursework rather than code. I keep it here because it is where I learned how a professional environment operates, and because the two certifications came out of it, but I would not present it as engineering experience on par with the internships that followed.",
+      "This was an internal build rather than direct client delivery, and it was heavily supervised, as a first-year placement should be. Most of the system is configuration rather than code, which is how Salesforce is designed to be used but does mean it demonstrates platform judgement more than software engineering depth. The certifications and the access-control thinking are what I carried forward.",
   },
   {
     slug: "qa-reranker",
@@ -561,7 +564,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Python", "LangChain", "LangSmith", "Streamlit"],
     summary:
-      "A five-week winter internship on a retrieval-augmented assistant over several hundred internal documents. My first real exposure to tracing and offline evaluation of an LLM pipeline rather than judging it by reading a few answers.",
+      "Worked on a retrieval-augmented assistant over several hundred internal policy and research documents, with LangSmith tracing and offline evaluation so quality was measured rather than eyeballed.",
     articles: [{ label: "RAG Assistant", slug: "pwc-rag" }],
   },
   {
@@ -571,10 +574,33 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Salesforce", "Apex"],
     summary:
-      "First internship, taken after first year. Six weeks of structured self-study, then an HR recruitment platform built on Salesforce with a team of ten interns. Both Salesforce certifications earned along the way.",
+      "First internship, taken after first year. Built an HR recruitment platform on Salesforce with application tracking and role-based access for HR managers, recruiters and interviewers. Earned both Salesforce certifications during the placement.",
     articles: [{ label: "HR Recruiting on Salesforce", slug: "quadrafort-salesforce" }],
   },
 ];
+
+export const now = {
+  updated: "August 2026",
+  items: [
+    {
+      label: "Final year at NUS",
+      body: "Y4S1 underway. Computer Science with minors in Mathematics and Quantitative Finance, focus areas in AI and Computer Security.",
+    },
+    {
+      label: "Building EduCrypto",
+      body: "A cryptography library for CS4236, one primitive a week, each paired with an attack that breaks a service using it badly.",
+      href: "/work/educrypto",
+    },
+    {
+      label: "Cloud SaaS project, CS5224",
+      body: "Cloud Computing group project starting September: design a SaaS that solves a real problem, build the prototype and web interface, then cost it honestly against an on-premise implementation. Aiming to build it on Singapore open data.",
+    },
+    {
+      label: "Open to 2027 new-grad roles",
+      body: "Graduating May 2027, looking for full-time software and AI engineering work, based in Singapore.",
+    },
+  ],
+};
 
 export const skills = [
   {
@@ -699,6 +725,7 @@ export const d20Facts = [
 
 export const paletteIndex = [
   { label: "Intro", href: "/#top", group: "Sections" },
+  { label: "Currently", href: "/#now", group: "Sections" },
   { label: "Work", href: "/#work", group: "Sections" },
   { label: "Projects", href: "/#projects", group: "Sections" },
   { label: "Honours", href: "/#honours", group: "Sections" },
