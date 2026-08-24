@@ -40,7 +40,7 @@ export default function FitChecker() {
         Paste a job description.
       </h1>
       <p className="mt-4 max-w-xl leading-relaxed text-muted">
-        This runs entirely in your browser — nothing is sent anywhere. It maps
+        This runs entirely in your browser, nothing is sent anywhere. It maps
         the JD against what I’ve actually done, links each match to the
         evidence, and tells you honestly where I’d be learning on the job.
       </p>
@@ -83,7 +83,7 @@ export default function FitChecker() {
                   `, ${result.gaps.length} honest gap${result.gaps.length === 1 ? "" : "s"}`}
               </div>
               <p className="text-sm text-faint">
-                Keyword mapping, not magic — the case studies are the real signal.
+                Keyword mapping, not magic, the case studies are the real signal.
               </p>
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function FitChecker() {
             <Link href="/contact" className="text-copper link-und">
               Get in touch
             </Link>{" "}
-            — or read the{" "}
+           , or read the{" "}
             <Link href="/#work" className="text-copper link-und">
               case studies
             </Link>{" "}

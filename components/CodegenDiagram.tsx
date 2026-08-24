@@ -38,7 +38,7 @@ export default function CodegenDiagram() {
         {/* row 2: shared module */}
         <g strokeWidth="1.2">
           <rect x="220" y="180" width="362" height="58" className={box} strokeDasharray="4 3" />
-          <text x="401" y="204" textAnchor="middle" fontSize="12" className={label}>codegen_utils.py — shared helper module</text>
+          <text x="401" y="204" textAnchor="middle" fontSize="12" className={label}>codegen_utils.py, shared helper module</text>
           <text x="401" y="222" textAnchor="middle" fontSize="9" className={sub}>node creation · wiring · attributes · target-prim relationships · 4 undocumented API workarounds</text>
         </g>
         <g className="stroke-faint" strokeWidth="1.2" strokeDasharray="3 3">
@@ -58,7 +58,7 @@ export default function CodegenDiagram() {
         </defs>
       </svg>
       <figcaption className="microlabel mt-3">
-        fig. — the generation loop. One engineer-week of manual wiring per subprogram, reduced to seconds per run. (Reconstructed from my published internship report; internal specifics simplified.)
+        fig., the generation loop. One engineer-week of manual wiring per subprogram, reduced to seconds per run. (Reconstructed from my published internship report; internal specifics simplified.)
       </figcaption>
     </figure>
   );

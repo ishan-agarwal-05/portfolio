@@ -21,7 +21,7 @@ export default function BeyondSection() {
                 <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
                   {ttrpgSystems.map((s) => (
                     <span key={s.name} className="font-mono text-[11px] text-faint">
-                      <span className="text-copper">{s.name}</span> — {s.note}
+                      <span className="text-copper">{s.name}</span>, {s.note}
                     </span>
                   ))}
                 </div>

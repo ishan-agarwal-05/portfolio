@@ -85,10 +85,10 @@ export default function D20() {
               className="text-sm leading-relaxed text-muted"
             >
               {result === 20 && (
-                <span className="mr-1 font-mono text-xs font-bold text-copper">NAT 20 —</span>
+                <span className="mr-1 font-mono text-xs font-bold text-copper">NAT 20,</span>
               )}
               {result === 1 && (
-                <span className="mr-1 font-mono text-xs font-bold text-copper">NAT 1 —</span>
+                <span className="mr-1 font-mono text-xs font-bold text-copper">NAT 1,</span>
               )}
               {fact}
             </motion.p>

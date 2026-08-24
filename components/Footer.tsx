@@ -28,7 +28,7 @@ export default function Footer() {
       </div>
       <div className="mx-auto max-w-content px-5 pb-8">
         <p className="font-mono text-[11px] text-faint">
-          Hand-built with Next.js. Press <span className="kbd">⌘K</span> — or roll the d20.
+          Hand-built with Next.js. Press <span className="kbd">⌘K</span>, or roll the d20.
         </p>
       </div>
     </footer>

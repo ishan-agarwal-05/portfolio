@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Download } from "lucide-react";
 import { site } from "@/lib/data";
 
 const container = {
@@ -32,7 +32,7 @@ export default function Hero() {
             </motion.p>
             <motion.h1
               variants={item}
-              className="font-display display-tight text-[13vw] text-ink sm:text-[7.2rem]"
+              className="font-display display-tight text-[12vw] text-ink sm:text-[5.4rem] lg:text-[6.8rem]"
             >
               Software that
               <br />
@@ -42,7 +42,7 @@ export default function Hero() {
               variants={item}
               className="mt-8 max-w-2xl text-lg leading-relaxed text-muted"
             >
-              I&rsquo;m Ishan — final-year Computer Science student at NUS, minoring in
+              I&rsquo;m Ishan, final-year Computer Science student at NUS, minoring in
               Mathematics and Quantitative Finance. Four internships across robotics
               simulation, backend platforms and applied AI, including six months
               building digital twin tooling at Hyundai&rsquo;s Singapore R&D centre.
@@ -61,6 +61,15 @@ export default function Hero() {
               >
                 Ask the agent
               </a>
+              <a
+                href={site.resume}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-1 py-3 font-mono text-[12px] uppercase tracking-wider text-muted transition-colors hover:text-copper"
+              >
+                <Download size={13} />
+                Resume (PDF)
+              </a>
             </motion.div>
           </div>
           <motion.div variants={item} className="hidden lg:block">
@@ -74,7 +83,7 @@ export default function Hero() {
                 className="h-[340px] w-[255px] object-cover object-top grayscale transition-all duration-500 hover:grayscale-0"
               />
               <div className="flex items-center justify-between px-1 pt-2">
-                <span className="microlabel">fig. 01 — the author</span>
+                <span className="microlabel">fig. 01, the author</span>
                 <span className="microlabel text-copper">SG</span>
               </div>
             </div>

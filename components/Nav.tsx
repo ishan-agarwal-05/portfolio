@@ -12,6 +12,8 @@ const links = [
   { label: "Contact", href: "/contact" },
 ];
 
+const resumeHref = "/Ishan_Agarwal_Resume.pdf";
+
 export default function Nav() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-paper/85 backdrop-blur-md">
@@ -27,6 +29,14 @@ export default function Nav() {
           ))}
         </div>
         <div className="flex items-center gap-2">
+          <a
+            href={resumeHref}
+            target="_blank"
+            rel="noreferrer"
+            className="hidden border border-line px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-wider text-muted transition-colors hover:border-copper hover:text-copper sm:block"
+          >
+            Resume
+          </a>
           <button
             aria-label="Open command palette"
             onClick={() => window.dispatchEvent(new CustomEvent("open-palette"))}

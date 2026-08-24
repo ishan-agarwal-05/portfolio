@@ -8,7 +8,7 @@ export default function SkillsSection() {
       <SectionHeading
         index="04 / toolbox"
         title="Toolbox"
-        sub="Everything here has shipped something above — no keyword stuffing."
+        sub="Everything here has shipped something above, no keyword stuffing."
       />
       <div className="grid gap-10 sm:grid-cols-2">
         {skills.map((g, i) => (

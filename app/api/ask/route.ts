@@ -22,12 +22,12 @@ function rateLimited(ip: string): string | null {
     globalCount = 0;
   }
   if (globalCount >= MAX_GLOBAL_PER_DAY) {
-    return "The agent has hit its daily budget. Email me instead — I'm cheaper.";
+    return "The agent has hit its daily budget. Email me instead, I'm cheaper.";
   }
   const now = Date.now();
   const arr = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
   if (arr.length >= MAX_PER_WINDOW) {
-    return "Easy there — you've hit the rate limit. Try again in a few minutes, or just email me.";
+    return "Easy there, you've hit the rate limit. Try again in a few minutes, or just email me.";
   }
   arr.push(now);
   hits.set(ip, arr);
@@ -40,7 +40,7 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 export async function POST(req: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json(
-      { error: "The agent isn't configured yet — no API key on this deployment." },
+      { error: "The agent isn't configured yet, no API key on this deployment." },
       { status: 503 }
     );
   }
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
         }
       } catch (err) {
         controller.enqueue(
-          encoder.encode("\n\n[The agent hit an error — try again, or email me.]")
+          encoder.encode("\n\n[The agent hit an error, try again, or email me.]")
         );
       } finally {
         controller.close();

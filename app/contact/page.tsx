@@ -28,7 +28,7 @@ const channels = [
     label: "GitHub",
     value: "coming soon",
     href: site.github,
-    note: "Being cleaned up — repos for the projects here are on their way.",
+    note: "Being cleaned up, repos for the projects here are on their way.",
   },
   {
     icon: FileDown,
@@ -49,7 +49,7 @@ export default function ContactPage() {
         </h1>
         <p className="mt-4 max-w-xl leading-relaxed text-muted">
           {site.availability}. Based in Singapore. If you’ve read a case study
-          and have questions about the messy parts — those are my favourite
+          and have questions about the messy parts, those are my favourite
           conversations.
         </p>
       </Reveal>

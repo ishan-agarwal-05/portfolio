@@ -78,7 +78,7 @@ export default function AskAgent() {
         Ask me anything<span className="text-copper">*</span>
       </h1>
       <p className="mt-4 max-w-xl text-sm leading-relaxed text-faint">
-        *about Ishan. Grounded in the same data model that renders this site — it
+        *about Ishan. Grounded in the same data model that renders this site, it
         will say &ldquo;I don&rsquo;t know&rdquo; rather than make things up, and it knows where
         the detailed articles live. Rate-limited, because tokens cost money.
       </p>

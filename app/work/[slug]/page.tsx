@@ -62,7 +62,7 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
               className="inline-flex items-center gap-1 border border-ink px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-ink transition-colors hover:border-copper hover:text-copper"
             >
               <ArrowUpRight size={12} />
-              {cs.repoNote ? `code — ${cs.repoNote}` : "code on GitHub"}
+              {cs.repoNote ? `code · ${cs.repoNote}` : "code on GitHub"}
             </a>
           )}
           {!cs.repo && cs.repoNote && (

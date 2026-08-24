@@ -10,7 +10,7 @@ export default function WorkSection() {
       <SectionHeading
         index="01 / work"
         title="Four internships, three years"
-        sub="Robotics simulation, backend platforms, applied AI, enterprise software. Each one has a full write-up — including what didn't ship."
+        sub="Robotics simulation, backend platforms, applied AI, enterprise software. Each one has a full write-up, including what didn't ship."
       />
       <div>
         {experiences.map((e, i) => (

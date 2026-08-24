@@ -89,4 +89,4 @@ body {
 }
 
 /* big editorial display sizing helper */
-.display-tight { letter-spacing: -0.015em; line-height: 0.98; }
+.display-tight { letter-spacing: -0.02em; line-height: 1.02; font-weight: 500; }
