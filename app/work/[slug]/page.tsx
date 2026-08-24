@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
@@ -78,6 +79,25 @@ export default function CaseStudyPage({ params }: { params: { slug: string } }) 
       {cs.slug === "action-graph-generator" && (
         <Reveal delay={0.05}>
           <CodegenDiagram />
+        </Reveal>
+      )}
+
+      {cs.slug === "eg1311-robot" && (
+        <Reveal delay={0.05}>
+          <figure className="mt-14 border border-line bg-surface p-4 sm:p-6">
+            <Image
+              src="/photos/eg1311-circuit.jpg"
+              alt="Tinkercad circuit: Arduino Uno, HC-SR04 ultrasonic sensor, two L293D H-bridges driving three DC motors, and a servo catapult on a 9V supply"
+              width={1600}
+              height={848}
+              className="w-full"
+            />
+            <figcaption className="microlabel mt-3">
+              fig. the circuit as prototyped in Tinkercad. Arduino Uno, HC-SR04
+              ultrasonic sensor, two L293D H-bridges for the three drive motors,
+              and the servo catapult, all on a 9V supply.
+            </figcaption>
+          </figure>
         </Reveal>
       )}
 

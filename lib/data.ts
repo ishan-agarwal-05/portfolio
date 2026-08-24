@@ -410,29 +410,44 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: "eg1311-robot",
     kind: "project",
-    title: "Obstacle-Course & Ball-Launching Robot",
+    title: "Autonomous Obstacle-Course Robot",
     org: "NUS · EG1311 Design & Make",
-    period: "Feb – Mar 2025",
+    period: "Feb, Mar 2025",
     oneLiner:
-      "An Arduino robot that navigates a physical obstacle course, bumps, ramps, and launches a ping-pong ball over obstacles. Firmware, CAD, wiring and soldering, all of it.",
+      "An Arduino robot that drives an obstacle course, finds its own firing position with an ultrasonic sensor, launches a ping-pong ball from a servo catapult, and reverses out. No remote control.",
     metrics: [
-      { value: "1", label: "robot, from CAD model to competition run" },
-      { value: "2", label: "subsystems: drive + launcher" },
+      { value: "3", label: "DC motors on two H-bridges" },
+      { value: "5, 10 cm", label: "ultrasonic firing window" },
+      { value: "0", label: "human input during the run" },
     ],
-    stack: ["Arduino", "C/C++", "Fusion 360", "Tinkercad"],
+    stack: ["Arduino", "C++", "HC-SR04", "L293D", "Servo", "Fusion 360", "Tinkercad"],
     summary:
-      "A hardware project in a portfolio of software: designed and built a robot that drives an obstacle course with bumps and ramps, then launches a ping-pong ball accurately over an obstacle. Every layer was ours, CAD modelling in Fusion 360, circuit prototyping in Tinkercad, physical wiring and soldering, and the firmware.",
+      "A hardware project in a portfolio of software. The brief was a robot that crosses an obstacle course of bumps and ramps and lands a ping-pong ball over a barrier. The part I care about is that it does this on its own: it ranges the target with an ultrasonic sensor, decides when it is close enough, fires, and backs out. Every layer was ours, from the Fusion 360 model and the soldering to the firmware state machine.",
     sections: [
       {
-        heading: "The build",
+        heading: "Sensing instead of guessing",
         body: [
-          "The firmware handles motor control for tracked driving over uneven terrain, sensor integration for navigation, and actuator control for the launcher, where repeatable launch force mattered more than raw power, because accuracy over the obstacle was the scored objective. The drivetrain and launcher geometry were modelled and iterated in Fusion 360 before fabrication.",
-          "Hardware debugging is a different sport from software debugging: when the robot veers left, the bug might be in your code, your wiring, your weight distribution, or the floor. Learning to isolate which layer is lying to you is the enduring lesson.",
+          "The naive version of this project drives forward for a fixed number of seconds and fires. That fails the moment the carpet grips differently or the battery sags, because dead reckoning has no idea where it actually is.",
+          "Instead the robot polls an HC-SR04 ultrasonic sensor every loop, pulsing the trigger for 10 microseconds and timing the echo, then converting to centimetres with the speed of sound and halving it for the round trip. When the reading falls inside a 5 to 10 centimetre window, the robot knows it is in front of the barrier rather than merely somewhere near it.",
+        ],
+      },
+      {
+        heading: "The state machine",
+        body: [
+          "The run is four states and no more: drive forward with all three motors, stop dead and hold for three seconds once the target window is detected, sweep the servo catapult from 40 to 90 degrees to launch, then reverse for ten seconds and halt permanently. The deliberate pause before firing matters, since launching while the chassis is still rocking from the drive throws the ball off line.",
+          "Driving three DC motors in both directions takes six control pins and more current than an Arduino can source, so motor control runs through two L293D H-bridge ICs on a breadboard with a separate 9V supply. The whole circuit was prototyped in Tinkercad before anything was soldered, which is how you find out you are one H-bridge short while it still costs nothing.",
+        ],
+      },
+      {
+        heading: "Debugging across layers",
+        body: [
+          "Hardware debugging is a different sport. When the robot veers left, the fault could be in the code, the wiring, the weight distribution or the floor, and none of them will tell you which. Serial logging of the live distance reading at every loop was what made the system legible: once you can watch the number the robot is deciding on, a mechanical problem stops looking like a logic problem.",
+          "That habit transferred directly. A year later at HMGICS I validated a code generator by diffing its output against a hand-built baseline, which is the same instinct: get the machine to show you its own ground truth instead of trusting that it agrees with you.",
         ],
       },
     ],
     honest:
-      "An engineering-design module project, scoped to a term. It won't impress a robotics lab, but it is the reason simulation work at HMGICS felt grounded: I had physically fought the gap between modelled and real behaviour before simulating it.",
+      "The firing window is a fixed 5 to 10 centimetre band checked once per loop, and the echo timing blocks while it waits. Approach fast enough and the robot can step over the window between two readings and never fire. We tuned the drive speed until that stopped happening, which works but is a calibration, not a fix. A ramped approach speed as the distance closes would have been the right answer.",
   },
   {
     slug: "this-site",
