@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local drop-off for files shared with Claude, never published
+_inbox/
+"photo options"/
