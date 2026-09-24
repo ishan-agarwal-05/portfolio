@@ -293,37 +293,41 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: "fake-news-fairness",
     kind: "project",
-    title: "Fake News Detection & the Fairness Cost of Metadata",
+    title: "Fake News Detection, and a Leak in LIAR",
     org: "NUS · CS3264 Machine Learning",
-    period: "Jan – May 2025",
+    period: "Jan, May 2025 · follow-up Sep 2026",
     oneLiner:
-      "Benchmarked 18 model/feature configurations on the LIAR political-claims benchmark and quantified a trade-off most papers skip: speaker metadata helps accuracy partly by learning who is speaking.",
+      "Benchmarked 18 model and feature setups on the LIAR political-claims dataset, then, rebuilding it a year later, found that LIAR's speaker credibility counts quietly include the answer.",
     metrics: [
-      { value: "18", label: "model & feature configurations" },
-      { value: "64.5%", label: "best accuracy, XGBoost + Word2Vec + party" },
-      { value: "+1–4", label: "points from metadata, with a fairness cost" },
+      { value: "18", label: "model and feature configurations" },
+      { value: "64.5%", label: "best result in the original project" },
+      { value: "74% to 63%", label: "once the leaked counts are replaced" },
+      { value: "100%", label: "of single-count speakers leak their own label" },
     ],
     stack: ["scikit-learn", "XGBoost", "DistilBERT", "Word2Vec", "TF-IDF"],
+    repo: "https://github.com/ishan-agarwal-05/fake-news-liar",
+    repoNote: "rebuilt from the report",
     summary:
-      "A systematic ablation on 12,836 short political statements from PolitiFact (the LIAR benchmark), binarised into true/false. We swept classical models (Logistic Regression, SVC, Random Forest, XGBoost), an MLP, and a fine-tuned DistilBERT across TF-IDF, Word2Vec and metadata feature sets, with the fairness analysis done properly instead of gestured at. Framed around a real deployment context: Singapore's POFMA fact-checking ecosystem, where manual review doesn't scale.",
+      "LIAR is 12,836 short political statements from PolitiFact, each with a truthfulness label and speaker metadata. We collapsed the labels to true or false and asked two questions: how well can a model triage claims like these, and what does it cost to get there? The framing was Singapore's fact-checking setup, where POFMA and Factually both depend on manual review that happens after a claim has already spread.",
     sections: [
       {
-        heading: "The ablation",
+        heading: "The original ablation",
         body: [
-          "Three feature variants per model family, statement-only, statement plus selected metadata (party, speaker title, subject), and full pipelines including the speaker's historical credibility counts, across sparse TF-IDF and dense pre-trained Word2Vec representations. Eighteen configurations in all, each with proper preprocessing: top-15 category encoding with rare values grouped, multi-label subject splitting, credibility counts as numeric features.",
-          "Patterns that held: dense embeddings beat TF-IDF for text-only inputs, SVMs beat logistic baselines in high dimensions, and the best configuration was XGBoost over Word2Vec plus party affiliation at 64.5% accuracy.",
+          "Three feature variants per model family: the statement alone, the statement plus selected metadata (party, speaker title, subject), and a full pipeline including the speaker's five historical credibility counts. We ran these across TF-IDF and pre-trained Word2Vec, with Logistic Regression, SVMs, Random Forest, XGBoost, an MLP and a fine-tuned DistilBERT. Eighteen configurations in all.",
+          "What held up: dense embeddings beat TF-IDF on text alone, SVMs beat logistic baselines in high dimensions, and the best setup was XGBoost on Word2Vec plus party affiliation at 64.5%. That last result is also the uncomfortable one. Adding party took the same model from 62.6% to 64.5%, so its verdict on a claim depends partly on the speaker's party rather than on what was said.",
         ],
       },
       {
-        heading: "The finding that mattered",
+        heading: "Rebuilding it, and finding the leak",
         body: [
-          "Metadata consistently lifts accuracy by 1–4 points, and the ablations show part of that lift comes from learning speaker identity rather than statement content. A model fed only the speaker's credibility history, with no statement text at all, still reaches 56.7% accuracy, essentially a prior on the person. That is a measurable fairness problem: a claim's predicted truthfulness should not depend on who said it, and any system deployed into a fact-checking pipeline would need that trade-off surfaced, not buried.",
-          "For calibration: published binary-classification results on LIAR sit in a similar band, it is a genuinely hard benchmark, and the controlled comparison was the point.",
+          "The original code lived on a teammate's laptop and is gone, so in September 2026 I rebuilt the project from the report. Running the full sweep, tree models on the credibility counts jumped to around 73%, far past anything in the report. A jump that large, only for flexible models, usually means the model found a shortcut, so I went looking for one.",
+          "The counts include the statement being classified. When a speaker's counts add up to exactly one, that one count is the statement's own label in every single test case. LIAR has no column for true verdicts, so a speaker with all-zero counts is almost always a true statement. And the counts-only model is 94% accurate on speakers with no other history but 65% on speakers with eleven or more, which is what reading answers off a table looks like.",
+          "The fix is to build speaker history the way a real system would see it: the label mix of the speaker's other training statements only. With that, the full model drops from 74.3% to 63.4%. About eleven of the twelve points were the leak; honest speaker history is worth roughly one. Our original logistic regression barely touched the raw counts, so the report's numbers still stand.",
         ],
       },
     ],
     honest:
-      "64.5% accuracy is modest, though it sits in the same range as published work on LIAR. The value is the 18-way comparison and the fairness measurement rather than the headline number. One thing I have to own: the code is gone. It lived on a teammate's laptop and was never pushed anywhere. Only the report survives.",
+      "64.5% is a modest number, in the same range as published binary results on LIAR. The rebuilt code is a reconstruction rather than our original submission, and the repo says so up front. The leakage audit is the part I would actually point someone to: the finding that matters is not a higher score but knowing which high scores to distrust.",
   },
   {
     slug: "lectureai",
@@ -441,6 +445,7 @@ export const caseStudies: CaseStudy[] = [
       { value: "4", label: "wheel prototypes before one worked" },
     ],
     stack: ["Arduino", "C++", "HC-SR04", "L293D", "Servo", "Fusion 360", "Laser cutting"],
+    repo: "https://github.com/ishan-agarwal-05/eg1311-robot",
     summary:
       "The course was a 3cm bump, a 10cm slope and a 30cm wall. The robot had to cross all of it, stop at the wall, launch a ping-pong ball over it and reverse back to the start, with no human input. A team of us designed and built it: laser-cut wheels, a polypropylene chassis, a servo catapult and the firmware.",
     sections: [
@@ -518,7 +523,7 @@ export const caseStudies: CaseStudy[] = [
       { value: "⌘K", label: "command palette over everything" },
     ],
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Claude API"],
-    repoNote: "repo public soon",
+    repo: "https://github.com/ishan-agarwal-05/portfolio",
     summary:
       "A portfolio should demonstrate engineering, not just describe it. Every page here is statically generated from a single typed data model; the interactive pieces, command palette, JD fit-checker, the ask-me agent, are working software, not decoration.",
     sections: [

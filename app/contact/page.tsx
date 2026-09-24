@@ -28,7 +28,7 @@ const channels = [
     label: "GitHub",
     value: "ishan-agarwal-05",
     href: site.github,
-    note: "Currently being tidied up. Several project repos are still private or live under a teammate's account.",
+    note: "Code for most of the projects here. The internship work stays with the companies.",
   },
   {
     icon: FileDown,
