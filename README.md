@@ -1,6 +1,6 @@
 # ishan-agarwal.com
 
-Personal portfolio of Ishan Agarwal — Next.js 14, Tailwind CSS, Framer Motion, and a Claude-powered ask-me agent.
+Personal portfolio of Ishan Agarwal. Next.js 14, Tailwind CSS and Framer Motion, plus an optional Claude-powered ask-me agent.
 
 ## Run locally
 
@@ -13,13 +13,13 @@ Open http://localhost:3000. Everything works without configuration except the as
 
 ## The ask-me agent
 
-`/ask` streams answers from the Claude API through `app/api/ask/route.ts`, grounded in `lib/data.ts` via `lib/agentContext.ts`. To enable it:
+`/ask` streams answers from the Claude API through `app/api/ask/route.ts`, grounded in `lib/data.ts` via `lib/agentContext.ts`. It's switched off by default: the page 404s and every link to it is hidden. To turn it on:
 
-1. Get an API key at [console.anthropic.com](https://console.anthropic.com) (API Keys → Create Key), and set a **monthly spend limit** under Settings → Limits (US$5 is plenty).
-2. Locally: create `.env.local` containing `ANTHROPIC_API_KEY=sk-ant-...`
-3. On Vercel: Project → Settings → Environment Variables → add `ANTHROPIC_API_KEY`, then redeploy.
+1. Get an API key at [console.anthropic.com](https://console.anthropic.com) (API Keys, Create Key) and set a monthly spend limit under Settings, Limits. US$5 is plenty.
+2. On Vercel: project `ishan-agarwal`, Settings, Environment Variables. Add `ANTHROPIC_API_KEY` (the key) and `NEXT_PUBLIC_AGENT_ENABLED` with the value `true`.
+3. Redeploy: `vercel deploy --prod --yes`.
 
-Without the key the page shows a friendly "not configured" message — the rest of the site is unaffected. The route also rate-limits per IP (10/10min) and globally (400/day).
+For local testing, put the same two lines in `.env.local`. The route rate-limits per IP (10 per 10 minutes) and globally (400 a day).
 
 ## Deploy
 
@@ -44,10 +44,9 @@ That compiles the full resume (with phone number, for applications) and a web co
 
 ## Where things live
 
-- `lib/data.ts` — **all content**: case studies/articles, experience, honours, beyond, d20 facts. Edit this, not the components.
-- `lib/fit.ts` — the JD-matcher's skill taxonomy and honest-gaps list.
-- `lib/agentContext.ts` — builds the agent's system prompt from `data.ts`.
-- `public/Ishan_Agarwal_Resume.pdf` — the downloadable resume; replace the file to update.
-- `public/portrait.jpg` — the hero photo.
-- `app/work/[slug]` — article pages, generated from `lib/data.ts`.
-- `app/opengraph-image.tsx` — the social-share card, rendered at build time.
+- `lib/data.ts`: all the content (articles, experience, honours, the Currently section, d20 facts). Edit this, not the components.
+- `lib/agentContext.ts`: builds the agent's system prompt from `data.ts`.
+- `public/Ishan_Agarwal_Resume.pdf`: the resume the site serves. Update it with `scripts/update-resume.sh`, not by hand.
+- `public/portrait.jpg`: the hero photo.
+- `app/work/[slug]`: article pages, generated from `lib/data.ts`.
+- `app/opengraph-image.tsx`: the preview card shown when the link is shared.
