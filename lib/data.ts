@@ -293,16 +293,16 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: "fake-news-fairness",
     kind: "project",
-    title: "Fake News Detection, and a Leak in LIAR",
+    title: "Fake News Detection, and the Caveat We Missed",
     org: "NUS · CS3264 Machine Learning",
-    period: "Jan, May 2025 · follow-up Sep 2026",
+    period: "Jan, May 2025 · rebuilt Sep 2026",
     oneLiner:
-      "Benchmarked 18 model and feature setups on the LIAR political-claims dataset, then, rebuilding it a year later, found that LIAR's speaker credibility counts quietly include the answer.",
+      "Benchmarked 18 model and feature setups on the LIAR political-claims dataset. Rebuilding it a year later, I measured what a caveat we'd missed was worth: 11 points of fake accuracy.",
     metrics: [
       { value: "18", label: "model and feature configurations" },
       { value: "64.5%", label: "best result in the original project" },
       { value: "74% to 63%", label: "once the leaked counts are replaced" },
-      { value: "100%", label: "of single-count speakers leak their own label" },
+      { value: "~11 pts", label: "of accuracy that came from the leak" },
     ],
     stack: ["scikit-learn", "XGBoost", "DistilBERT", "Word2Vec", "TF-IDF"],
     repo: "https://github.com/ishan-agarwal-05/fake-news-liar",
@@ -318,16 +318,16 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
       {
-        heading: "Rebuilding it, and finding the leak",
+        heading: "Rebuilding it, and the caveat we missed",
         body: [
           "The original code lived on a teammate's laptop and is gone, so in September 2026 I rebuilt the project from the report. Running the full sweep, tree models on the credibility counts jumped to around 73%, far past anything in the report. A jump that large, only for flexible models, usually means the model found a shortcut, so I went looking for one.",
-          "The counts include the statement being classified. When a speaker's counts add up to exactly one, that one count is the statement's own label in every single test case. LIAR has no column for true verdicts, so a speaker with all-zero counts is almost always a true statement. And the counts-only model is 94% accurate on speakers with no other history but 65% on speakers with eleven or more, which is what reading answers off a table looks like.",
+          "The shortcut turned out to be documented. LIAR's own README says the credibility counts include the statement being classified, and our team never read that line. The effect is easy to see once you know: when a speaker's counts add up to one, that count is the statement's own label in every test case, and a counts-only model is 94% accurate on speakers with no other history but 65% on speakers with eleven or more. That is a model reading answers off a table.",
           "The fix is to build speaker history the way a real system would see it: the label mix of the speaker's other training statements only. With that, the full model drops from 74.3% to 63.4%. About eleven of the twelve points were the leak; honest speaker history is worth roughly one. Our original logistic regression barely touched the raw counts, so the report's numbers still stand.",
         ],
       },
     ],
     honest:
-      "64.5% is a modest number, in the same range as published binary results on LIAR. The rebuilt code is a reconstruction rather than our original submission, and the repo says so up front. The leakage audit is the part I would actually point someone to: the finding that matters is not a higher score but knowing which high scores to distrust.",
+      "64.5% is a modest number, in the same range as published binary results on LIAR. The rebuilt code is a reconstruction rather than our original submission, and the repo says so up front. The leak itself is not a discovery; it is in the dataset's README, and others have measured it too. What I take from it is the habit: when a number jumps for no good reason, read the documentation before believing it.",
   },
   {
     slug: "lectureai",
