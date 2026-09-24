@@ -695,7 +695,7 @@ export const beyond = [
   },
   {
     title: "Teaching and volunteering",
-    body: "With Teach SG I volunteer with at-risk youth, placed at Choa Chu Kang Secondary with Sec 1 and 2 students. There is some tutoring, but most of it is about social and behavioural skills rather than schoolwork. I missed sessions while I was away in July, so from late September to early November I'm making them up at Dazhong Primary as part of Gen2050. Before university I volunteered with SETU under the Each One Teach One initiative.",
+    body: "With Teach SG I volunteer with at-risk youth, placed at Choa Chu Kang Secondary with Sec 1 and 2 students. There is some tutoring, but most of it is about social and behavioural skills rather than schoolwork. I missed sessions while I was away in July, so from late September to early November I'm making them up at Dazhong Primary. Before university I volunteered with SETU under the Each One Teach One initiative.",
   },
 ];
 
