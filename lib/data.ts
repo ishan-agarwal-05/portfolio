@@ -25,6 +25,8 @@ export type Experience = {
   articles: { label: string; slug: string }[];
 };
 
+export const agentEnabled = process.env.NEXT_PUBLIC_AGENT_ENABLED === "true";
+
 export const site = {
   name: "Ishan Agarwal",
   role: "Software Engineer, Backend, Platform & Applied AI",
@@ -377,7 +379,7 @@ export const caseStudies: CaseStudy[] = [
       { value: "2", label: "person team, built over one summer" },
     ],
     stack: ["React", "Node.js", "Express", "Socket.IO", "MongoDB", "Material-UI"],
-    repoNote: "repo access being restored",
+    repoNote: "on my teammate's account",
     summary:
       "Built for NUS Orbital (the university's summer software programme): delivery fees are a fixed cost that nobody coordinates away, so Bundl lets users browse restaurants, see what people nearby are ordering, and bundle orders together, splitting the fee and cutting packaging waste.",
     sections: [
@@ -390,7 +392,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     honest:
-      "Student-project scope. Authentication was basic, the matching was heuristic rather than optimal, and the planned features like OAuth, bill splitting and live restaurant data never got built. The repo sits under a teammate's account and I am in the process of getting it moved across.",
+      "Student-project scope. Authentication was basic, the matching was heuristic rather than optimal, and the planned features like OAuth, bill splitting and live restaurant data never got built. The code lives on my teammate's account, because we built it together on his laptop and every commit went out under his name.",
   },
   {
     slug: "teachers-pet",
@@ -476,7 +478,7 @@ export const caseStudies: CaseStudy[] = [
     oneLiner:
       "A cryptography library built primitive by primitive across a semester, paired each week with an attack that breaks a service using that primitive badly.",
     metrics: [
-      { value: "in progress", label: "Y4S1, running now" },
+      { value: "5 weeks", label: "of primitives and attacks so far" },
       { value: "weekly", label: "primitive, then the attack on it" },
       { value: "private", label: "code closed until the course ends" },
     ],
@@ -501,7 +503,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     honest:
-      "This is genuinely unfinished and I am listing it because it is what I am working on now, not because it is a result. Right now it covers the earliest weeks: encoding, the one-time pad and the attack on reusing its key. The repository stays private until the course ends, because the module's policy forbids publishing the library while the assignment is running, and I will link it here once that lifts.",
+      "This is genuinely unfinished and I am listing it because it is what I am working on now, not because it is a result. Five weeks in, it covers encoding and the one-time pad, a small substitution-permutation block cipher, modes of operation, hashing and MACs, each with its attack. The repository stays private until the course ends, because the module's policy forbids publishing the library while the assignment is running, and I will link it here once that lifts.",
   },
   {
     slug: "this-site",
@@ -580,7 +582,7 @@ export const experiences: Experience[] = [
 ];
 
 export const now = {
-  updated: "August 2026",
+  updated: "September 2026",
   items: [
     {
       label: "Final year at NUS",
@@ -593,7 +595,7 @@ export const now = {
     },
     {
       label: "Cloud SaaS project, CS5224",
-      body: "Cloud Computing group project starting September: design a SaaS that solves a real problem, build the prototype and web interface, then cost it honestly against an on-premise implementation. Aiming to build it on Singapore open data.",
+      body: "Cloud Computing group project: a SaaS that solves a real problem, with a working prototype and web interface, costed against running the same thing on-premise. Preliminary report due end of September, prototype and demo in November.",
     },
     {
       label: "Open to 2027 new-grad roles",
@@ -731,7 +733,7 @@ export const paletteIndex = [
   { label: "Honours", href: "/#honours", group: "Sections" },
   { label: "Toolbox", href: "/#skills", group: "Sections" },
   { label: "Beyond the Terminal", href: "/#beyond", group: "Sections" },
-  { label: "Ask the agent", href: "/ask", group: "Pages" },
+  ...(agentEnabled ? [{ label: "Ask the agent", href: "/ask", group: "Pages" }] : []),
   { label: "Contact", href: "/contact", group: "Pages" },
   ...caseStudies.map((c) => ({
     label: c.title,

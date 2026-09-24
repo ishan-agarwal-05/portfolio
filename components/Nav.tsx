@@ -4,9 +4,9 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Command, Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
-import { site } from "@/lib/data";
+import { agentEnabled, site } from "@/lib/data";
 
-const links = [
+const allLinks = [
   { label: "Work", href: "/#work" },
   { label: "Projects", href: "/#projects" },
   { label: "Honours", href: "/#honours" },
@@ -14,6 +14,8 @@ const links = [
   { label: "Ask", href: "/ask" },
   { label: "Contact", href: "/contact" },
 ];
+
+const links = allLinks.filter((l) => agentEnabled || l.href !== "/ask");
 
 export default function Nav() {
   const [open, setOpen] = useState(false);

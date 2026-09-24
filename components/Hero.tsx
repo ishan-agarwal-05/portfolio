@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowDown, Download } from "lucide-react";
-import { site } from "@/lib/data";
+import { agentEnabled, site } from "@/lib/data";
 
 const container = {
   hidden: {},
@@ -71,10 +71,10 @@ export default function Hero() {
                 See the work
               </a>
               <a
-                href="/ask"
+                href={agentEnabled ? "/ask" : "/contact"}
                 className="border border-ink px-6 py-3 font-mono text-[12px] uppercase tracking-wider text-ink transition-colors hover:border-copper hover:text-copper"
               >
-                Ask the agent
+                {agentEnabled ? "Ask the agent" : "Get in touch"}
               </a>
               <a
                 href={site.resume}

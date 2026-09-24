@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import AskAgent from "@/components/AskAgent";
+import { agentEnabled } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Ask the agent",
@@ -8,5 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function AskPage() {
+  if (!agentEnabled) notFound();
   return <AskAgent />;
 }
