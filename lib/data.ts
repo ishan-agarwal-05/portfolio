@@ -695,7 +695,7 @@ export const beyond = [
   },
   {
     title: "Teaching and volunteering",
-    body: "Volunteer teacher with Teach SG, and before that with SETU under the Each One Teach One initiative. I keep coming back to it because teaching is the most reliable way to find the gaps in what you thought you knew, and because the students who most need someone patient rarely have one.",
+    body: "With Teach SG I volunteer with at-risk youth, currently at Choa Chu Kang Secondary with Sec 1 and 2 students. There is some tutoring, but most of it is about social and behavioural skills: showing up consistently, how to handle a bad day, how to work with each other. I missed sessions while I was away in July, so this term I am making them up at Dazhong Primary as part of Gen2050. Before university I volunteered with SETU under the Each One Teach One initiative.",
   },
 ];
 
@@ -705,7 +705,7 @@ export const d20Facts = [
   "Six years of formal Indian classical music training, now applied to the keyboard.",
   "All India Rank 21 in the NTSE, India's national talent search examination.",
   "Third place internationally at Odyssey of the Mind in St. Petersburg, I built the robot.",
-  "I volunteer as a teacher with Teach SG.",
+  "I volunteer with Teach SG, mentoring at-risk Sec 1 and 2 students.",
   "Cambridge C2 Proficiency, Grade A, the examiner's way of saying I will not stop talking.",
   "I co-founded a startup and made the call to shut it down. Best judgement rep I've ever earned.",
   "All India Rank 49 in FTRE, worth a ₹6,00,000 scholarship.",
