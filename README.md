@@ -23,10 +23,24 @@ Without the key the page shows a friendly "not configured" message — the rest 
 
 ## Deploy
 
-1. Push this repo to GitHub.
-2. [vercel.com](https://vercel.com) → sign in with GitHub → Add New → Project → pick the repo → Deploy (defaults are fine).
-3. Add the `ANTHROPIC_API_KEY` env var (above).
-4. Custom domain: Vercel project → Settings → Domains → add `ishan-agarwal.com` and `www.ishan-agarwal.com`, then set the DNS records Vercel shows you inside GoDaddy (cPanel → DNS). Vercel handles HTTPS automatically.
+Hosted on Vercel (project `ishan-agarwal`), domain `ishan-agarwal.com` on GoDaddy DNS pointing at Vercel.
+
+```bash
+git push                      # save the change to GitHub
+vercel deploy --prod --yes    # publish it
+```
+
+If the repo is connected to Vercel (Vercel settings, sign-in methods, GitHub), `git push` alone publishes.
+
+## Updating the resume
+
+The source lives outside this repo, in `/Users/ishan/personal/resumes/Ishan_Agarwal_Resume_<Month><Year>.tex`. Edit it, then:
+
+```bash
+./scripts/update-resume.sh
+```
+
+That compiles the full resume (with phone number, for applications) and a web copy without the phone number, copies the web copy to `public/Ishan_Agarwal_Resume.pdf`, commits, pushes and deploys. Needs `brew install tectonic` once. `--no-deploy` builds without publishing.
 
 ## Where things live
 
