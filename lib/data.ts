@@ -189,33 +189,26 @@ export const caseStudies: CaseStudy[] = [
     role: "AI Engineering Intern",
     period: "Dec 2024, Jan 2025",
     oneLiner:
-      "A retrieval-augmented assistant over several hundred internal policy and research documents, so teams could find answers and stop redoing research that already existed.",
+      "A retrieval-augmented chatbot over several hundred internal policy and research documents, for looking up policy and for finding earlier work so teams stopped repeating research.",
     metrics: [
-      { value: "100s", label: "of internal documents in the corpus" },
-      { value: "2", label: "retrieval modes: policy lookup, prior work" },
+      { value: "100s", label: "of internal documents behind it" },
+      { value: "LangChain", label: "retrieval pipeline and prompts" },
       { value: "LangSmith", label: "tracing and offline evaluation" },
     ],
     stack: ["Python", "LangChain", "LangSmith", "Streamlit", "RAG"],
     summary:
-      "PwC teams kept re-answering the same policy questions and redoing research another team had already finished, because the knowledge sat in several hundred documents that nobody could search by meaning. I worked on the retrieval-augmented assistant built to fix that, on a team shipping it for internal use.",
+      "Teams at PwC kept answering the same policy questions and redoing research that already existed, because the knowledge sat in several hundred documents that couldn't be searched by meaning. I worked on a retrieval-augmented generation chatbot to fix that: ask a question, get an answer grounded in the relevant internal documents.",
     sections: [
       {
-        heading: "What the system did",
+        heading: "What I built",
         body: [
-          "The pipeline was built in LangChain: document ingestion and chunking, embedding into a vector store, retrieval, and prompt assembly for grounded answers. Two modes matched two different problems. Policy lookup returned an answer with the source passage beside it, so the reader could check it. Prior-work discovery was the more interesting one, because the useful output is not the generated text at all, it is the pointer to a document the team did not know existed.",
-          "The interface was Streamlit, which for an internal tool used by consultants was the right call: the UI could change as fast as the feedback arrived, and getting it in front of real users early mattered more than polish.",
-        ],
-      },
-      {
-        heading: "Measuring instead of guessing",
-        body: [
-          "The part that shaped how I build things now was the evaluation discipline. Every chain was traced in LangSmith, and prompt changes were compared against a fixed question set offline rather than judged by reading a few outputs and feeling good about them.",
-          "In late 2024 that was not yet standard practice, and the difference between an answer that seems better and an answer that measurably is better is the whole game once a model is in the loop. I have not built anything with an LLM in it since without setting up evaluation first.",
+          "The pipeline was built in LangChain: ingest and chunk the documents, embed them, retrieve the passages relevant to a question, and have the model answer from those passages rather than from memory. It served two uses, looking up policy and surfacing earlier research so a team could find work that had already been done.",
+          "I used LangSmith for prompt management and for tracing and evaluating the retrieval pipeline offline, and built the chat interface in Streamlit, which made it quick to put a working prototype in front of people and change it as feedback came in.",
         ],
       },
     ],
     honest:
-      "This was a prototype that proved the concept, not a hardened deployment. Access control and document-permission awareness were out of scope, and that is exactly where the hard engineering would start: a retrieval system that surfaces a document to someone who should not see it is worse than no retrieval system. It was also a short placement on an ongoing team effort, so the design was shared work rather than mine alone.",
+      "This was a prototype rather than a production system, and one part of a larger effort by the team.",
   },
   {
     slug: "quadrafort-salesforce",
@@ -245,7 +238,7 @@ export const caseStudies: CaseStudy[] = [
       {
         heading: "The platform we built",
         body: [
-          "The team built an HR recruitment application on Salesforce: candidate application tracking through each hiring stage, and role-based access so that an HR manager, a recruiter and an interviewer each see exactly what their role should and nothing beyond it. Permissions were the part that needed the most care, because in a hiring system the access model is the product as much as the workflow is.",
+          "The team built an HR recruitment application on Salesforce: candidate application tracking through each hiring stage, and different levels of access for different employees, so an HR manager sees and can do more than other staff. Permissions were the part that needed the most care, because in a hiring system the access model is the product as much as the workflow is.",
           "Most of the team were final-year students while I was finishing my first, which is an efficient way to learn quickly. I also got to watch the implementation of Domino's India's customer-complaints application up close, my first look at how a client deployment at national scale is planned and staged.",
         ],
       },
@@ -350,25 +343,25 @@ export const caseStudies: CaseStudy[] = [
       {
         heading: "Build",
         body: [
-          "The pipeline took a raw lecture recording and produced structured study notes: FFmpeg audio processing, transcription, then LLM-based structuring into summaries and study materials, run asynchronously through a Celery task queue over Redis, because an hour-long lecture doesn't process inside an HTTP request. A Python backend with Alembic-managed migrations, a React frontend, and the operational glue between them. I led full-stack development end to end.",
+          "The pipeline took a raw lecture recording and produced structured study notes: FFmpeg audio processing, transcription, then LLM-based structuring into summaries and study materials, run asynchronously through a Celery task queue over Redis, because an hour-long lecture doesn't process inside an HTTP request. A Python backend with Alembic-managed migrations, a React frontend, and the operational glue between them. I led full-stack development.",
           "The technically interesting decision was splitting correction from summarisation. A summariser fed a corrupted transcript produces a clean, well-organised summary of the wrong thing, so we used lecture slides as reference material to fix technical terminology in the transcript first, then summarised. Error propagation is a pipeline design problem, not a model problem.",
         ],
       },
       {
         heading: "Discovery, and what it said",
         body: [
-          "I ran customer discovery across NUS student cohorts while we built. Two walls emerged. The soft one: students liked the output, said so enthusiastically, and then didn't change their study workflow or show willingness to pay at sustainable unit economics, interview enthusiasm and retention behaviour told different stories, and retention was telling the truth. The hard one: lecture recordings contain other students' voices, which in Singapore triggers real data-protection consent requirements. Every adoption conversation risked becoming a legal conversation first.",
+          "I ran customer discovery across NUS student cohorts while we built. The product did what it promised, but we never found product-market fit, and one problem sat underneath everything: lecture recordings contain other students' voices, which in Singapore brings real data-protection consent requirements. Adoption kept running into that before it got to the product.",
         ],
       },
       {
         heading: "The wind-down call",
         body: [
-          "We chose to stop rather than drift, a decision made when the evidence was in, not when the money ran out. What I'd do differently: run pricing and willingness-to-pay tests before building the full pipeline, not after. Talking to users is not the same as watching what they do.",
+          "We decided to wind it down in December 2025 rather than let it drift. The lesson I took is that how a product can legally be adopted is a question for the first month, not something to work out after the pipeline is built.",
         ],
       },
     ],
     honest:
-      "No product-market fit is the headline and I don't dress it up. The transferable asset is judgement: knowing which evidence would have changed the outcome, and testing it earlier next time. The repo is private under my co-founder's account.",
+      "It didn't reach product-market fit, and I'm not going to dress that up. The code is on my co-founder's GitHub, linked above.",
   },
   {
     slug: "bundl",
@@ -377,9 +370,9 @@ export const caseStudies: CaseStudy[] = [
     org: "NUS Orbital · full-stack",
     period: "May – Aug 2024",
     oneLiner:
-      "A web app that cuts food delivery costs by letting people in the same location pool orders, real-time matching, live chat, and a grouping algorithm.",
+      "A web app for pooling food delivery orders so people share one delivery fee: browse restaurants, see what others are ordering, and chat in real time to coordinate.",
     metrics: [
-      { value: "real-time", label: "order matching and chat via WebSockets" },
+      { value: "real-time", label: "chat between users via Socket.IO" },
       { value: "2", label: "person team, built over one summer" },
     ],
     stack: ["React", "Node.js", "Express", "Socket.IO", "MongoDB", "Material-UI"],
@@ -390,13 +383,12 @@ export const caseStudies: CaseStudy[] = [
       {
         heading: "How it works",
         body: [
-          "Users add items from multiple restaurants to a cart, see other open orders at their location, and coordinate through built-in chat to bundle. The matching layer groups compatible orders, same area, overlapping restaurant, close in time, and Socket.IO keeps carts, chat and matches live across clients without refresh. MongoDB stores users, restaurants and orders; Express serves the API; Material-UI keeps the interface out of the way.",
-          "The interesting part was the real-time state. Keeping several people looking at the same changing order without anyone seeing a stale version is harder than the feature list makes it sound.",
+          "Users build a cart from one or more restaurants, browse the open orders other users have placed, grouped by restaurant, and message each other through built-in chat to agree on a shared order. Chat runs over Socket.IO so messages arrive live. MongoDB stores users, restaurants, carts and chats; Express serves the API; the front end is React with Material-UI.",
         ],
       },
     ],
     honest:
-      "Student-project scope. Authentication was basic, the matching was heuristic rather than optimal, and the planned features like OAuth, bill splitting and live restaurant data never got built. The code lives on my teammate's account, because we built it together on his laptop and every commit went out under his name.",
+      "Student-project scope. Coordination is manual through chat; automatic matching by location and time was planned but never built, along with OAuth, bill splitting and live restaurant data. Authentication was basic. The code lives on my teammate's account, because we built it together on his laptop and every commit went out under his name.",
   },
   {
     slug: "teachers-pet",
@@ -517,7 +509,7 @@ export const caseStudies: CaseStudy[] = [
     org: "ishan-agarwal.com",
     period: "Aug 2026",
     oneLiner:
-      "The site you're reading. Next.js, statically generated, with a command palette, an AI agent that answers questions about me, and a d20 that knows twenty things.",
+      "The site you're reading. Next.js, statically generated, with a command palette and a d20 that knows twenty things.",
     metrics: [
       { value: "100%", label: "static pages, no server except the agent" },
       { value: "⌘K", label: "command palette over everything" },
@@ -624,7 +616,7 @@ export const skills = [
   },
   {
     group: "Security",
-    items: ["Applied cryptography", "Threat modelling", "SonarQube", "JWT / auth flows", "Secure API design"],
+    items: ["Applied cryptography", "SonarQube", "JWT authentication"],
   },
   {
     group: "Simulation & Robotics",
@@ -636,7 +628,7 @@ export const honours = [
   {
     title: "NTSE Scholar · All India Rank 21",
     detail:
-      "National Talent Search Examination, the Government of India's national scholarship exam. Stage II merit holder among roughly a million candidates.",
+      "National Talent Search Examination, the Government of India's national scholarship exam. Stage II merit holder.",
   },
   {
     title: "FTRE · All India Rank 49",
@@ -703,13 +695,13 @@ export const beyond = [
   },
   {
     title: "Teaching and volunteering",
-    body: "Volunteer teacher with Teach SG, tutoring secondary and JC students, and before that with SETU under the Each One Teach One initiative. I keep coming back to it because teaching is the most reliable way to find the gaps in what you thought you knew, and because the students who most need someone patient rarely have one.",
+    body: "Volunteer teacher with Teach SG, and before that with SETU under the Each One Teach One initiative. I keep coming back to it because teaching is the most reliable way to find the gaps in what you thought you knew, and because the students who most need someone patient rarely have one.",
   },
 ];
 
 export const d20Facts = [
   "I play D&D 5e, Call of Cthulhu, Monster of the Week, FIST and Traveller. Always a player, never the DM.",
-  "Natural 20! I once reverse-engineered four undocumented NVIDIA APIs by diffing USD files in an air-gapped network.",
+  "Natural 20! I once worked out four undocumented OmniGraph API behaviours by diffing USD files in an air-gapped network.",
   "Six years of formal Indian classical music training, now applied to the keyboard.",
   "All India Rank 21 in the NTSE, India's national talent search examination.",
   "Third place internationally at Odyssey of the Mind in St. Petersburg, I built the robot.",
