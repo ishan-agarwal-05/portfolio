@@ -14,6 +14,19 @@ const suggestions = [
   "What does he do outside of code?",
 ];
 
+// Turn /work/<slug> paths in the agent's answer into real links.
+function withLinks(text: string) {
+  return text.split(/(\/work\/[a-z0-9-]+)/g).map((part, i) =>
+    /^\/work\/[a-z0-9-]+$/.test(part) ? (
+      <Link key={i} href={part} className="link-und text-copper">
+        {part}
+      </Link>
+    ) : (
+      part
+    )
+  );
+}
+
 export default function AskAgent() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -110,8 +123,8 @@ export default function AskAgent() {
                   {m.content}
                 </div>
               ) : (
-                <div className="max-w-[85%] border-l-2 border-copper pl-4 text-sm leading-relaxed text-muted">
-                  {m.content}
+                <div className="max-w-[85%] whitespace-pre-wrap border-l-2 border-copper pl-4 text-sm leading-relaxed text-muted">
+                  {withLinks(m.content)}
                   {busy && i === messages.length - 1 && (
                     <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse bg-copper align-middle" />
                   )}
