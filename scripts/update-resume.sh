@@ -48,6 +48,13 @@ tectonic -X compile "$WEB_TEX" --outdir "$OUT_DIR" >/dev/null
 echo "Built: ${BASE}.pdf (for applications)"
 echo "Built: ${BASE}_web.pdf (for the site)"
 
+# Role-specific versions (Backend, Robotics, AI) live in resumes/variants/.
+# They're built for applications only and never published to the site.
+VARIANTS="$RESUMES_DIR/variants/build-variants.sh"
+if [[ -x "$VARIANTS" ]]; then
+  "$VARIANTS" "$TEX" || echo "Role-specific versions failed to build; the main resume is unaffected." >&2
+fi
+
 cp "${BASE}_web.pdf" "$SITE_DIR/public/Ishan_Agarwal_Resume.pdf"
 cd "$SITE_DIR"
 

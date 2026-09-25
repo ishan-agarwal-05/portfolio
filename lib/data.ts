@@ -51,7 +51,7 @@ export const caseStudies: CaseStudy[] = [
       "A code generator that turns Kawasaki AS robot programs into wired Isaac Sim control graphs, taking a subprogram from about a week of manual work down to an afternoon.",
     metrics: [
       { value: "1 wk to ~4 h", label: "per subprogram, including review" },
-      { value: "40+", label: "subprograms in one factory cell, the scale it is meant for (validated on one subprogram family so far)" },
+      { value: "40+", label: "subprograms per cell; tested on one family so far" },
       { value: "7", label: "generation approaches benchmarked" },
       { value: "4", label: "undocumented API behaviours reverse-engineered" },
     ],
