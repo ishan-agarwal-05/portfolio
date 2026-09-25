@@ -376,6 +376,7 @@ export const caseStudies: CaseStudy[] = [
       { value: "2", label: "person team, built over one summer" },
     ],
     stack: ["React", "Node.js", "Express", "Socket.IO", "MongoDB", "Material-UI"],
+    repo: "https://github.com/ritulkrsingh/Bundl",
     repoNote: "on my teammate's account",
     summary:
       "Built for NUS Orbital (the university's summer software programme): delivery fees are a fixed cost that nobody coordinates away, so Bundl lets users browse restaurants, see what people nearby are ordering, and bundle orders together, splitting the fee and cutting packaging waste.",
