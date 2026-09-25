@@ -55,7 +55,7 @@ export const caseStudies: CaseStudy[] = [
       { value: "7", label: "generation approaches evaluated" },
       { value: "4", label: "undocumented API behaviours reverse-engineered" },
     ],
-    stack: ["Python", "Claude Code", "NVIDIA Isaac Sim", "OmniGraph", "USD", "Kawasaki AS"],
+    stack: ["Python", "LLM agents", "NVIDIA Isaac Sim", "OmniGraph", "USD", "Kawasaki AS"],
     summary:
       "HMGICS is building a digital twin of its electric-vehicle factory on NVIDIA Isaac Sim, working toward a software-defined dark factory by 2032. The robots are programmed in Kawasaki AS, an assembly-like language, in files running to tens of thousands of lines. To simulate them, the team rebuilds that logic as Isaac Sim Action Graphs, a visual node-based system a bit like Scratch, from primitive nodes they had built for things like joint and linear moves, suction-cup pick and place, and reparenting scene components. Wiring one subprogram into an Action Graph by hand took roughly an engineering week, and a single cell has forty or more subprograms across multiple robots. Over the last three months of my internship I scoped, researched and built a proof-of-concept generator that does the wiring automatically, so the remaining work is checking it rather than building it.",
     sections: [
@@ -65,7 +65,8 @@ export const caseStudies: CaseStudy[] = [
           "The brief was a single sentence: automate the authoring of Action Graphs from robot programs. No acceptance criteria, no prior art inside the team, no spec. I started by writing down the existing manual workflow step by step with its pain points, defined the problem boundaries myself, and reviewed them with the team lead. That was a different kind of work from my first three months, where the features were already defined.",
           "Before committing to an approach I evaluated seven candidates, including a hand-written deterministic parser, a local LLM, Copilot-style assistants, a custom API pipeline, and an LLM agent working from structured documentation. A hand-written parser is the most predictable, but Kawasaki AS programs have far too many edge cases to cover with rules written in advance.",
           "So I split the problem in two. An LLM agent writes the generator, and the generator itself is plain Python: each script builds the same node every time it runs, so it can be read, diffed and reviewed like any other code. The authoring is where the uncertainty lives, and an engineer still verifies every generated graph before it is trusted, because the output drives the motion of a physical factory robot.",
-          "The agent was Claude Code running inside VS Code, which is the team's editor, so the workflow fit how they already worked rather than adding a new tool. It ran on my regular workstation, which could not run Isaac Sim; I copied the generated scripts over SFTP to the air-gapped GPU cluster to test them and build the nodes. The full-time engineers had workstations that could run Isaac Sim directly, so that round trip was an intern-sized problem.",
+          "Nothing in the setup is tied to one model. Everything the agent needs lives in plain files in the repository, so the team can swap the model underneath without rewriting anything: a company model, a local one, or an open-weight model self-hosted on the GPU cluster if cost or data policy calls for it. For the proof of concept I used Claude Code inside VS Code, the team's editor, because it gave the best results; the internal AI assistant was also available but weaker at this.",
+          "The agent ran on my regular workstation, which could not run Isaac Sim, so I copied the generated scripts over SFTP to the air-gapped GPU cluster to test them and build the nodes. The full-time engineers had workstations that could run Isaac Sim directly, so that round trip was an intern-sized problem.",
         ],
       },
       {
@@ -124,8 +125,8 @@ export const caseStudies: CaseStudy[] = [
       {
         heading: "The traceability audit",
         body: [
-          "The project target: over 80% of simulation assets traceable to identifiers in the factory's physical-parts systems. The report showed roughly 31%, and the working assumption was a code bug. I exported the full scene hierarchy to establish ground truth, 36 physical parts, cross-referenced every asset against the mapping spreadsheet and the external system records by hand, and tagged the parts that could be matched: each asset in Isaac Sim carries a metadata tag holding its identifier in the factory's other systems, such as the logistics record number.",
-          "That took coverage to 16 of 36, or 44%. Every remaining gap was a data problem rather than a code one: identifiers that existed in the mapping file but were never written into the scene, parts with no identifier information at all, and one asset in the simulation that no external system knew about. I wrote it up with a remediation plan ordered by root cause, so the team could fix the data instead of hunting for a bug that was not there.",
+          "The project target: over 80% of simulation assets traceable to identifiers in the factory's physical-parts systems. The report showed roughly 31%, and the working assumption was a code bug. I exported the full scene hierarchy to establish ground truth, 36 physical parts, cross-referenced every asset against the mapping spreadsheet (which was protected against programmatic reading, so I wrote a workaround to unlock it) and the external system records, and tagged the parts that could be matched: each asset in Isaac Sim carries a metadata tag holding its identifier in the factory's other systems, such as the logistics record number.",
+          "That took coverage to 16 of 36, or 44%. Every remaining gap was a data problem rather than a code one: identifiers that existed in the mapping file but were never written into the scene, parts with no identifier information at all, and one asset in the simulation that no external system knew about. I wrote it up with a remediation plan ordered by root cause, so the team could fix the data instead of hunting for a bug that was not there: tagging six more parts would reach 61%, and closing all twenty gaps would take coverage above 95%.",
         ],
       },
       {
@@ -504,7 +505,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     honest:
-      "This is genuinely unfinished and I am listing it because it is what I am working on now, not because it is a result. Five weeks in, it covers encoding and the one-time pad, a small substitution-permutation block cipher, modes of operation, hashing and MACs, each with its attack. The repository stays private until the course ends, because the module's policy forbids publishing the library while the assignment is running, and I will link it here once that lifts.",
+      "This is genuinely unfinished and I am listing it because it is what I am working on now, not because it is a result. As of mid-September, five weeks in, it has encoding and the one-time pad; a configurable substitution-permutation block cipher; block cipher modes, broken where CBC ran with a fixed key and IV so the first ciphertext block gave away which message had been encrypted; CMAC and a second, deliberately leaky MAC, beaten with a forgery in the unforgeability game; and hashing built three ways (Davies-Meyer, Merkle-Damgård and a sponge), with collisions found for both targets. The repository stays private until the course ends, because the module's policy forbids publishing the library while the assignment is running, and I will link it here once that lifts.",
   },
   {
     slug: "this-site",
@@ -544,7 +545,7 @@ export const experiences: Experience[] = [
     location: "Singapore",
     stack: ["Python", "NVIDIA Isaac Sim", "OmniGraph", "USD"],
     summary:
-      "Six months on the simulation team building digital twin tooling for an EV smart factory. Shipped the reporting system and three UI extensions, then scoped and built an AI code-generation workflow, Claude Code working from a harness I wrote, that takes a robot subprogram from about a week of manual wiring down to an afternoon of review.",
+      "Six months on the simulation team building digital twin tooling for an EV smart factory. Shipped the reporting system and three UI extensions, then scoped and built an AI code-generation workflow, an LLM agent working from a harness I wrote, that takes a robot subprogram from about a week of manual wiring down to an afternoon of review.",
     articles: [
       { label: "Action Graph Code Generator", slug: "action-graph-generator" },
       { label: "Digital Twin Platform", slug: "digital-twin-platform" },
