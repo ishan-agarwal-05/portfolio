@@ -51,7 +51,7 @@ export const caseStudies: CaseStudy[] = [
       "A code generator that turns Kawasaki AS robot programs into wired Isaac Sim control graphs, taking a subprogram from about a week of manual work down to an afternoon.",
     metrics: [
       { value: "1 wk to ~4 h", label: "per subprogram, including review" },
-      { value: "40+", label: "subprograms in a single factory cell" },
+      { value: "40+", label: "subprograms in one factory cell, the scale it is meant for (validated on one subprogram family so far)" },
       { value: "7", label: "generation approaches benchmarked" },
       { value: "4", label: "undocumented API behaviours reverse-engineered" },
     ],
@@ -554,7 +554,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Python", "Flask", "Flutter", "MySQL"],
     summary:
-      "Built three Flask microservices as internal building blocks for a 100-person company that kept rewriting the same foundations: auth and OTP, documents, notifications. SonarQube gates, OpenAPI docs, and a month of evening tutorials on Linux, Nginx and deployment from the engineer who ran the company's infrastructure.",
+      "Built three Flask microservices as internal building blocks for a 100-person company that kept rewriting the same foundations: auth and OTP, documents, notifications. SonarQube gates, OpenAPI docs, and a month of daily lessons on Linux, Nginx and deployment from the engineer who ran the company's infrastructure, with reading homework he then showed me working in production.",
     articles: [{ label: "Plug-and-Play Microservices", slug: "techfour-dms" }],
   },
   {
