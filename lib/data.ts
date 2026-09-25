@@ -521,7 +521,7 @@ export const caseStudies: CaseStudy[] = [
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Claude API"],
     repo: "https://github.com/ishan-agarwal-05/portfolio",
     summary:
-      "A portfolio should demonstrate engineering, not just describe it. Every page here is statically generated from a single typed data model; the interactive pieces, command palette, JD fit-checker, the ask-me agent, are working software, not decoration.",
+      "A portfolio should demonstrate engineering, not just describe it. Every page here is statically generated from a single typed data model; the interactive pieces, the command palette and the ask-me agent, are working software, not decoration.",
     sections: [
       {
         heading: "Decisions",
@@ -544,7 +544,7 @@ export const experiences: Experience[] = [
     location: "Singapore",
     stack: ["Python", "NVIDIA Isaac Sim", "OmniGraph", "USD"],
     summary:
-      "Six months on the simulation team building digital twin tooling for an EV smart factory. Shipped the reporting system and three UI extensions, then scoped and built a code generator that takes a robot subprogram from about a week of manual wiring down to an afternoon.",
+      "Six months on the simulation team building digital twin tooling for an EV smart factory. Shipped the reporting system and three UI extensions, then scoped and built an AI code-generation workflow, Claude Code working from a harness I wrote, that takes a robot subprogram from about a week of manual wiring down to an afternoon of review.",
     articles: [
       { label: "Action Graph Code Generator", slug: "action-graph-generator" },
       { label: "Digital Twin Platform", slug: "digital-twin-platform" },
@@ -567,7 +567,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Python", "LangChain", "LangSmith", "Streamlit"],
     summary:
-      "Worked on a retrieval-augmented assistant over several hundred internal policy and research documents, with LangSmith tracing and offline evaluation so quality was measured rather than eyeballed.",
+      "Worked on a retrieval-augmented assistant over several hundred internal policy and research documents, with LangSmith for prompt management, tracing and offline evaluation.",
     articles: [{ label: "RAG Assistant", slug: "pwc-rag" }],
   },
   {
@@ -577,7 +577,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Salesforce", "Apex"],
     summary:
-      "First internship, taken after first year. Built an HR recruitment platform on Salesforce with application tracking and role-based access for HR managers, recruiters and interviewers. Earned both Salesforce certifications during the placement.",
+      "First internship, taken after first year. Built an HR recruitment platform on Salesforce with application tracking and different access levels for different employees, such as HR managers. Earned both Salesforce certifications during the placement.",
     articles: [{ label: "HR Recruiting on Salesforce", slug: "quadrafort-salesforce" }],
   },
 ];
@@ -665,7 +665,7 @@ export const honours = [
   {
     title: "Academic scholarships",
     detail:
-      "Full tuition scholarship at Mayoor School for ranking first across the batch three years running; 98% in senior secondary.",
+      "Full tuition scholarship at Mayoor School for ranking first in the batch three years running; later 98% in Class 12 at Amity International.",
   },
 ];
 
@@ -708,7 +708,7 @@ export const d20Facts = [
   "Natural 20! I once worked out four undocumented OmniGraph API behaviours by diffing USD files in an air-gapped network.",
   "Six years of formal Indian classical music training, now applied to the keyboard.",
   "All India Rank 21 in the NTSE, India's national talent search examination.",
-  "Third place internationally at Odyssey of the Mind in St. Petersburg, I built the robot.",
+  "Third place internationally at Odyssey of the Mind in St. Petersburg, as the robot's primary developer.",
   "I volunteer with Teach SG, mentoring at-risk Sec 1 and 2 students.",
   "Cambridge C2 Proficiency, Grade A, the examiner's way of saying I will not stop talking.",
   "I co-founded a startup and made the call to shut it down. Best judgement rep I've ever earned.",
@@ -716,13 +716,13 @@ export const d20Facts = [
   "I speak English, Hindi, and a little German.",
   "Minoring in both Mathematics and Quantitative Finance alongside CS.",
   "My favourite bug hunt: proving a 31% traceability number was a data problem, not a code problem.",
-  "I benchmarked seven code-generation approaches before writing the real one.",
+  "I evaluated seven ways to turn robot programs into simulation code, then built the one where an AI agent writes it.",
   "I've worked in an air-gapped network, no Stack Overflow, just source code and patience.",
   "Focus areas: Artificial Intelligence and Computer Security.",
   "I wireframe UIs before coding them. It has never once been a waste of time.",
   "State Rank 1 in Uttar Pradesh in VVM, a national science talent search.",
   "I have been to over thirty countries, and I still travel with my family at least once a year.",
-  "This site's entire content lives in one typed data file. The palette, matcher and agent all read from it.",
+  "This site's entire content lives in one typed data file. The palette and the agent both read from it.",
   "This site has a command palette. Press ⌘K.",
 ];
 
