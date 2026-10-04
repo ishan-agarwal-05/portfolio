@@ -12,7 +12,25 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const cs = caseStudies.find((c) => c.slug === params.slug);
-  return { title: cs?.title ?? "Article", description: cs?.oneLiner };
+  if (!cs) return { title: "Article" };
+  const url = `/work/${cs.slug}`;
+  return {
+    title: cs.title,
+    description: cs.oneLiner,
+    alternates: { canonical: url },
+    openGraph: {
+      title: `${cs.title} · Ishan Agarwal`,
+      description: cs.oneLiner,
+      url,
+      siteName: "Ishan Agarwal",
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${cs.title} · Ishan Agarwal`,
+      description: cs.oneLiner,
+    },
+  };
 }
 
 export default function CaseStudyPage({ params }: { params: { slug: string } }) {
