@@ -7,7 +7,7 @@ import SectionHeading from "./SectionHeading";
 export default function BeyondSection() {
   return (
     <section id="beyond" className="mx-auto max-w-content px-5 py-24">
-      <SectionHeading index="04 / beyond" title="Beyond work" />
+      <SectionHeading index="05 / beyond" title="Beyond work" />
       <div className="space-y-14">
         {beyond.map((b) => (
           <Reveal key={b.title}>

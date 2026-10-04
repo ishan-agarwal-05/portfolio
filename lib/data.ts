@@ -305,11 +305,11 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
       {
-        heading: "What went wrong",
+        heading: "Building it",
         body: [
-          "A lot. We went through four sets of wheels. 8 cm cardboard wheels couldn't get over the bump. 10 cm laser-cut acrylic wheels cleared the bump but slid on the slope. Rubber bands added grip but peeled off, because hot glue doesn't hold on acrylic. Strips of anti-slip mat finally stuck and gripped. The ball holder took a few tries too: we tilted it past 90 degrees, raised it, and gave it a curved lip so the ball stayed in over the bumps but still flew out when the servo fired.",
-          "The robot kept veering right. That turned out to be the front-right motor being weaker than the others, which we confirmed by testing motor speeds and fixed by angling the front wheels slightly left. Power was another problem. A separate 6V battery pack for the motors couldn't supply enough current, so they stuttered, and running everything from one 9V battery fixed it. And the wires were finicky: they kept coming loose and shorting on the breadboard until we replaced them with a proper connector, so it failed plenty of times in testing.",
-          "On the day, it worked, and I got an A+ for the robot's run. Looking back, I'd make it slow down as it approaches the wall, because the sensor reading blocks while it waits for the echo, and at higher speed it can skip past the firing band between readings. We tuned the speed until that stopped happening.",
+          "The wheels took four versions. 8 cm cardboard wheels were too small to get over the bump, and 10 cm laser-cut acrylic wheels cleared it but slid on the slope. Rubber bands gave grip but wouldn't stay on, so the final wheels were acrylic with strips of anti-slip mat, which got up the slope easily.",
+          "The ball holder went through a few shapes too. The final one is tilted back past 90 degrees, raised, and has a curved lip, so the ball stays in over the bump but flies out cleanly when the servo fires. I tested the motor speeds and found the front-right one was slightly weaker, so we angled the front wheels a little to keep the robot driving straight. And we ran everything from a single 9V battery, which gave the motors steadier power than a separate battery pack.",
+          "On the day, it ran the whole course, and I got an A+ for the robot's run.",
         ],
       },
     ],
@@ -477,6 +477,21 @@ export const skills = [
   },
 ];
 
+export const education = {
+  university: {
+    name: "National University of Singapore",
+    period: "Aug 2023 – May 2027",
+    degree: "Bachelor of Computing (Honours), Computer Science",
+    body: "Minors in Mathematics and Quantitative Finance, with specialisations in AI and cybersecurity. Coursework includes data structures and algorithms, operating systems, networks, information security, machine learning, natural language processing and cryptography.",
+  },
+  school: {
+    name: "School in India",
+    period: "Until 2023",
+    degree: "Mayoor School · Amity International School",
+    body: "I ranked first in my batch at Mayoor School three years running, which came with a full tuition scholarship, and finished with 98% in Class 12 at Amity International. Most of my honours are from those years.",
+  },
+};
+
 export const honours = [
   {
     title: "NTSE Scholar · All India Rank 21",
@@ -505,15 +520,6 @@ export const honours = [
     title: "Cambridge C2 Proficiency · Grade A",
     detail: "The highest level of Cambridge English certification. IELTS 8.0.",
   },
-  {
-    title: "Salesforce Administrator & Developer",
-    detail: "Both certifications, earned during my first internship.",
-  },
-  {
-    title: "Academic scholarships",
-    detail:
-      "Full tuition scholarship at Mayoor School for ranking first in my batch three years running, then 98% in Class 12 at Amity International.",
-  },
 ];
 
 export const ttrpgSystems = [
@@ -539,7 +545,6 @@ export const beyond: { title: string; body: string; photos?: Photo[] }[] = [
     photos: [
       { src: "/photos/ttrpg-rangarangarang.jpg", w: 514, h: 835, alt: "Character sheet portrait of Rangarangarang, a crocodilian warrior with a satchel", caption: "My character, Rangarangarang." },
       { src: "/photos/art-shadow-and-her-light.jpg", w: 1143, h: 1400, alt: "Blue pen sketch of a hooded character holding a small light, titled The Shadow and Her Light", caption: "An NPC from our campaign, doodled at the table." },
-      { src: "/photos/art-forest.jpg", w: 712, h: 1400, alt: "Coloured pencil drawing of a small figure on a path through a glowing blue forest under a swirling moon", caption: "Coloured pencil." },
       { src: "/photos/art-canary-crest.jpg", w: 990, h: 1400, alt: "Pencil sketch of a heraldic crest with a canary on a shield and a banner reading Canary", caption: "A crest, doodled during a session." },
     ],
   },
@@ -604,7 +609,8 @@ export const paletteIndex = [
   { label: "Work", href: "/#work", group: "Sections" },
   { label: "Projects", href: "/#projects", group: "Sections" },
   { label: "Write-ups", href: "/write-ups", group: "Pages" },
-  { label: "Toolbox", href: "/#skills", group: "Sections" },
+  { label: "Education", href: "/#education", group: "Sections" },
+  { label: "Skills", href: "/#skills", group: "Sections" },
   { label: "Beyond work", href: "/#beyond", group: "Sections" },
   ...(agentEnabled ? [{ label: "Ask the agent", href: "/ask", group: "Pages" }] : []),
   { label: "Contact", href: "/contact", group: "Pages" },
