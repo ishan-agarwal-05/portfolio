@@ -1,5 +1,4 @@
 import Hero from "@/components/Hero";
-import NowSection from "@/components/NowSection";
 import WorkSection from "@/components/WorkSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import HonoursSection from "@/components/HonoursSection";
@@ -10,7 +9,6 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <NowSection />
       <WorkSection />
       <ProjectsSection />
       <HonoursSection />

@@ -6,7 +6,7 @@ export const size = ogSize;
 export const contentType = "image/png";
 
 export function generateStaticParams() {
-  return articles.filter((c) => c.kind === "work").map((c) => ({ slug: c.slug }));
+  return articles.filter((c) => c.kind === "project").map((c) => ({ slug: c.slug }));
 }
 
 export default function Image({ params }: { params: { slug: string } }) {

@@ -12,7 +12,8 @@ export type CaseStudy = {
   repoNote?: string;
   summary: string;
   sections: { heading: string; body: string[] }[];
-  honest: string;
+  // short entries show on the home page only, with no article of their own
+  brief?: boolean;
 };
 
 export type Experience = {
@@ -83,11 +84,10 @@ export const caseStudies: CaseStudy[] = [
           "Most of the work went into what the agent works from, so that it produces correct graphs for AS programs it has never seen: dozens of markdown files of translation rules (this kind of AS code means this graph structure), a catalogue of the team's primitive and compound nodes, style guides, a folder of verified example scripts such as a bumper pick, and prompts for starting a new agent session in the repository. It all lives in a folder in the team's own git repository, deliberately, so the engineers keep maintaining it after I left: adding rules as new cases appear, adding primitives, and promoting new verified examples. When I finished, no vision script had been verified as a canonical example yet, which is the obvious next addition.",
           "The same files double as the handover documentation, including every technical decision with the alternatives I rejected and the parts of Kawasaki AS semantics that matter for code generation.",
           "To check the documentation actually worked, I drafted a user acceptance test: an engineer who has never seen the project generates a compound node using the documentation alone, with no verbal guidance. I also filed the internal AI use-case submission for the workflow, presented the concept to the VP (as slides rather than a live demo), and left behind a set of diagnostic and inspection scripts for the team.",
+          "It is still a proof of concept: verified on pick sequences rather than across all forty subprograms, and the four hours includes an engineer checking and fixing each generated graph.",
         ],
       },
     ],
-    honest:
-      "This is a validated proof of concept on pick sequences, not a production system across all forty subprograms. A script runs in seconds, but an engineer still verifies every generated graph and fixes what is wrong, which is why the honest figure is about four hours per subprogram, sometimes more. Separately, simulated moves could land slightly off the real factory positions even with the correct coordinates; that sim-to-real gap was out of my scope and was being fixed by another project rebuilding the scene. My final report called the approach 'deterministic Python with structured reference documentation', which is accurate about the output and undersells the part that took the most work: the harness that lets an agent write that Python correctly.",
   },
   {
     slug: "digital-twin-platform",
@@ -102,7 +102,6 @@ export const caseStudies: CaseStudy[] = [
       { value: "3", label: "Omniverse Kit UI extensions shipped" },
       { value: "31% → 44%", label: "asset traceability, gaps root-caused" },
       { value: "36", label: "physical parts cross-referenced by hand" },
-      { value: "1", label: "config-driven architecture reused by every later feature" },
     ],
     stack: ["Python", "Omniverse Kit", "USD", "YAML", "Model-View-Delegate"],
     summary:
@@ -136,8 +135,6 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "Two of my original objectives, Nucleus file selection and aggregated multi-run reports, never got built. Phase 2 moved to the action graph generator instead, which was the more useful thing for the team, but it does mean I finished the internship with two stated goals unmet.",
   },
   {
     slug: "techfour-dms",
@@ -148,12 +145,7 @@ export const caseStudies: CaseStudy[] = [
     period: "May – Jul 2025",
     oneLiner:
       "Three Flask microservices built as internal building blocks, so the company would stop rewriting user management, document handling and notifications on every new project.",
-    metrics: [
-      { value: "3", label: "microservices built and deployed" },
-      { value: "100+", label: "employee company, internal platform work" },
-      { value: "SonarQube", label: "static analysis and security gates" },
-      { value: "OpenAPI", label: "every endpoint documented in Swagger" },
-    ],
+    metrics: [],
     stack: ["Python", "Flask", "Flutter", "MySQL", "JWT", "SonarQube", "Swagger", "GitLab"],
     repo: "https://github.com/ishan-agarwal-05/dms_personal",
     repoNote: "personal rebuild",
@@ -182,11 +174,10 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "By the time I left, the services worked but had no real users, because the platform they were built for was still in development. So I can speak to the design and the code quality, not to how they behaved under production traffic. Load testing was minimal, and knowing what I know now I would have been more defensive about rate limiting on the OTP flow. The public repo is my own rebuild of the system, not company code.",
   },
   {
     slug: "pwc-rag",
+    brief: true,
     kind: "work",
     title: "RAG Assistant over Internal Knowledge",
     org: "PwC India",
@@ -194,11 +185,7 @@ export const caseStudies: CaseStudy[] = [
     period: "Dec 2024 – Jan 2025",
     oneLiner:
       "A retrieval-augmented chatbot over several hundred internal policy and research documents, for looking up policy and for finding earlier work so teams stopped repeating research.",
-    metrics: [
-      { value: "100s", label: "of internal documents behind it" },
-      { value: "LangChain", label: "retrieval pipeline and prompts" },
-      { value: "LangSmith", label: "tracing and offline evaluation" },
-    ],
+    metrics: [],
     stack: ["Python", "LangChain", "LangSmith", "Streamlit", "RAG"],
     summary:
       "Teams at PwC kept answering the same policy questions and redoing research that already existed, because the knowledge sat in several hundred documents that couldn't be searched by meaning. I worked on a retrieval-augmented generation chatbot to fix that: ask a question, get an answer grounded in the relevant internal documents.",
@@ -211,11 +198,10 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "This was a prototype rather than a production system, and one part of a larger effort by the team.",
   },
   {
     slug: "quadrafort-salesforce",
+    brief: true,
     kind: "work",
     title: "HR Recruitment Platform on Salesforce",
     org: "Quadrafort Technologies",
@@ -223,11 +209,7 @@ export const caseStudies: CaseStudy[] = [
     period: "May – Jul 2024",
     oneLiner:
       "Three months building an HR recruitment platform on Salesforce with application tracking and role-based access, plus both Salesforce certifications earned along the way.",
-    metrics: [
-      { value: "3 months", label: "first professional placement" },
-      { value: "2", label: "Salesforce certifications earned" },
-      { value: "10", label: "engineers on the build team" },
-    ],
+    metrics: [],
     stack: ["Salesforce", "Apex", "SOQL", "Lightning", "VS Code"],
     summary:
       "My first internship, taken after first year. It began with structured training on the Salesforce platform, its data model and its conventions, then moved into building a genuine HR recruitment platform with the rest of the team. Three months, and the placement that taught me how a professional engineering environment actually runs.",
@@ -247,8 +229,6 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "This was an internal build rather than direct client delivery, and it was heavily supervised, as a first-year placement should be. Most of the system is configuration rather than code, which is how Salesforce is designed to be used but does mean it demonstrates platform judgement more than software engineering depth. The certifications and the access-control thinking are what I carried forward.",
   },
   {
     slug: "qa-reranker",
@@ -281,11 +261,10 @@ export const caseStudies: CaseStudy[] = [
         body: [
           "The reranking rule: if the top-two margin exceeds a threshold τ, keep the top answer untouched; below it, invoke a bi-encoder (all-MiniLM-L6-v2) that rescores both candidates by cosine similarity with the question, interpolated with the baseline scores at α = 0.5. Confident predictions cost nothing extra.",
           "The final system changed just 55 of 10,570 dev predictions, 14 became correct, 1 broke, for +0.12 EM and +0.11 F1 at near-zero marginal compute. We also ran the controls that make the result meaningful: global reranking without a margin trigger consistently hurts, reranking over top-3 or top-5 candidates hurts (more noise, no more signal), and a cross-encoder cost more without consistently winning. Negative results you can explain are worth more than a clean-looking table.",
+          "It is a small gain from a single run on the dev set, so I would not call it significant. The headroom analysis is the more useful result.",
         ],
       },
     ],
-    honest:
-      "+0.12 EM from a single dev-set run is a small number and I would not claim statistical significance from it. What the project is actually worth is the headroom analysis and the idea of spending compute only where the model is unsure. The controls that failed are in the report too.",
   },
   {
     slug: "fake-news-fairness",
@@ -323,8 +302,6 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "64.5% is a modest number, in the same range as published binary results on LIAR. The rebuilt code is a reconstruction rather than our original submission, and the repo says so up front. The leak itself is not a discovery; it is in the dataset's README, and others have measured it too. What I take from it is the habit: when a number jumps for no good reason, read the documentation before believing it.",
   },
   {
     slug: "lectureai",
@@ -334,10 +311,7 @@ export const caseStudies: CaseStudy[] = [
     period: "Feb – Dec 2025",
     oneLiner:
       "Co-founded a platform turning lecture recordings into AI-generated study notes. Led full-stack development, ran customer discovery across NUS cohorts, and made the call to wind it down.",
-    metrics: [
-      { value: "3", label: "co-founders, ten months" },
-      { value: "e2e", label: "audio → transcript → structured notes pipeline" },
-    ],
+    metrics: [],
     stack: ["Python", "Celery", "Redis", "FFmpeg", "React", "LLM APIs", "Alembic"],
     repo: "https://github.com/arshinsikka/lectureai-mvp",
     repoNote: "on a co-founder's account",
@@ -364,21 +338,17 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "It didn't reach product-market fit, and I'm not going to dress that up. The code is on my co-founder's GitHub, linked above.",
   },
   {
     slug: "bundl",
+    brief: true,
     kind: "project",
     title: "Bundl",
     org: "NUS Orbital · full-stack",
     period: "May – Aug 2024",
     oneLiner:
       "A web app for pooling food delivery orders so people share one delivery fee: browse restaurants, see what others are ordering, and chat in real time to coordinate.",
-    metrics: [
-      { value: "real-time", label: "chat between users via Socket.IO" },
-      { value: "2", label: "person team, built over one summer" },
-    ],
+    metrics: [],
     stack: ["React", "Node.js", "Express", "Socket.IO", "MongoDB", "Material-UI"],
     repo: "https://github.com/ritulkrsingh/Bundl",
     repoNote: "on my teammate's account",
@@ -392,21 +362,17 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "Student-project scope. Coordination is manual through chat; automatic matching by location and time was planned but never built, along with OAuth, bill splitting and live restaurant data. Authentication was basic. The code lives on my teammate's account, because we built it together on his laptop and every commit went out under his name.",
   },
   {
     slug: "teachers-pet",
+    brief: true,
     kind: "project",
     title: "Teacher's Pet",
     org: "NUS · CS2103T Software Engineering",
     period: "Sep – Dec 2024",
     oneLiner:
       "A Java desktop app for NUS teaching assistants, student records, attendance, grading tasks and queries, built brownfield on a ~6,000-line existing codebase with CI and automated tests.",
-    metrics: [
-      { value: "~6k", label: "lines of existing code extended brownfield" },
-      { value: "CI", label: "automated test suite on every push" },
-    ],
+    metrics: [],
     stack: ["Java", "JavaFX", "Gradle", "JUnit", "GitHub Actions"],
     repo: "https://github.com/ishan-agarwal-05/tp",
     summary:
@@ -425,8 +391,6 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "A course project on a course-provided foundation. The architecture was inherited rather than designed by us, and the feature scope was set by the module. What it taught was how to extend an unfamiliar codebase without breaking it, which turned out to be most of what the internships involved too.",
   },
   {
     slug: "eg1311-robot",
@@ -436,11 +400,7 @@ export const caseStudies: CaseStudy[] = [
     period: "Feb – Mar 2025",
     oneLiner:
       "An Arduino robot that crosses a bump and a slope, finds its own firing position with an ultrasonic sensor, launches a ping-pong ball over a 30cm wall, and reverses back to the start.",
-    metrics: [
-      { value: "30 cm", label: "wall the ball had to clear" },
-      { value: "3", label: "drive motors on H-bridge control" },
-      { value: "4", label: "wheel prototypes before one worked" },
-    ],
+    metrics: [],
     stack: ["Arduino", "C++", "HC-SR04", "L293D", "Servo", "Fusion 360", "Laser cutting"],
     repo: "https://github.com/ishan-agarwal-05/eg1311-robot",
     summary:
@@ -468,8 +428,6 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "The firing window is a fixed distance band checked once per loop, and the echo timing blocks while it waits, so approaching too fast can step over the window between readings and skip the launch. We tuned the drive speed until that stopped happening, which is a calibration rather than a fix. Slowing the approach as the distance closes would have been the right answer, and I would build it that way now.",
   },
   {
     slug: "educrypto",
@@ -479,11 +437,7 @@ export const caseStudies: CaseStudy[] = [
     period: "Aug 2026, in progress",
     oneLiner:
       "A cryptography library built primitive by primitive across a semester, paired each week with an attack that breaks a service using that primitive badly.",
-    metrics: [
-      { value: "5 weeks", label: "of primitives and attacks so far" },
-      { value: "weekly", label: "primitive, then the attack on it" },
-      { value: "private", label: "code closed until the course ends" },
-    ],
+    metrics: [],
     stack: ["Python", "pytest", "Flask", "cryptography"],
     repoNote: "private until the semester ends, by course policy",
     summary:
@@ -497,6 +451,12 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
       {
+        heading: "So far",
+        body: [
+          "Five weeks in, the library has encoding and the one-time pad; a configurable substitution-permutation block cipher; block cipher modes, broken where CBC ran with a fixed key and IV so the first ciphertext block gave away which message had been encrypted; CMAC and a second, deliberately leaky MAC, beaten with a forgery in the unforgeability game; and hashing built three ways (Davies-Meyer, Merkle-Damgård and a sponge), with collisions found for both targets.",
+        ],
+      },
+      {
         heading: "Where it ends up",
         body: [
           "By December this should be a working Python cryptography package covering symmetric encryption and its modes, message authentication and hashing, then the public-key half: RSA, Diffie-Hellman key exchange, El Gamal, and digital signatures, each with a matching attack demonstrating the failure mode when it is deployed carelessly. The later part of the course moves toward how these compose into real protocols, and where cryptography sits in modern systems like blockchain and privacy-preserving machine learning.",
@@ -504,21 +464,17 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "This is genuinely unfinished and I am listing it because it is what I am working on now, not because it is a result. As of mid-September, five weeks in, it has encoding and the one-time pad; a configurable substitution-permutation block cipher; block cipher modes, broken where CBC ran with a fixed key and IV so the first ciphertext block gave away which message had been encrypted; CMAC and a second, deliberately leaky MAC, beaten with a forgery in the unforgeability game; and hashing built three ways (Davies-Meyer, Merkle-Damgård and a sponge), with collisions found for both targets. The repository stays private until the course ends, because the module's policy forbids publishing the library while the assignment is running, and I will link it here once that lifts.",
   },
   {
     slug: "this-site",
+    brief: true,
     kind: "project",
     title: "This Website",
     org: "ishan-agarwal.com",
     period: "Aug 2026",
     oneLiner:
       "The site you're reading. Next.js, statically generated, with a command palette and a d20 that knows twenty things.",
-    metrics: [
-      { value: "100%", label: "static pages, no server except the agent" },
-      { value: "⌘K", label: "command palette over everything" },
-    ],
+    metrics: [],
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Claude API"],
     repo: "https://github.com/ishan-agarwal-05/portfolio",
     summary:
@@ -532,8 +488,6 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    honest:
-      "Built with Claude as a pair, which feels like the honest thing to say on a site that has an AI agent on it. The content, the numbers and the calls about what goes in are mine.",
   },
 ];
 
@@ -569,7 +523,7 @@ export const experiences: Experience[] = [
     stack: ["Python", "LangChain", "LangSmith", "Streamlit"],
     summary:
       "Worked on a retrieval-augmented assistant over several hundred internal policy and research documents, with LangSmith for prompt management, tracing and offline evaluation.",
-    articles: [{ label: "RAG Assistant", slug: "pwc-rag" }],
+    articles: [],
   },
   {
     org: "Quadrafort Technologies",
@@ -579,32 +533,9 @@ export const experiences: Experience[] = [
     stack: ["Salesforce", "Apex"],
     summary:
       "First internship, taken after first year. Built an HR recruitment platform on Salesforce with application tracking and different access levels for different employees, such as HR managers. Earned both Salesforce certifications during the placement.",
-    articles: [{ label: "HR Recruiting on Salesforce", slug: "quadrafort-salesforce" }],
+    articles: [],
   },
 ];
-
-export const now = {
-  updated: "September 2026",
-  items: [
-    {
-      label: "Final year at NUS",
-      body: "Y4S1 underway. Computer Science with minors in Mathematics and Quantitative Finance, focus areas in AI and Computer Security.",
-    },
-    {
-      label: "Building EduCrypto",
-      body: "A cryptography library for CS4236, one primitive a week, each paired with an attack that breaks a service using it badly.",
-      href: "/work/educrypto",
-    },
-    {
-      label: "Cloud SaaS project, CS5224",
-      body: "Cloud Computing group project: a SaaS that solves a real problem, with a working prototype and web interface, costed against running the same thing on-premise. Preliminary report due end of September, prototype and demo in November.",
-    },
-    {
-      label: "Open to 2027 new-grad roles",
-      body: "Graduating May 2027, looking for full-time software and AI engineering work, based in Singapore.",
-    },
-  ],
-};
 
 export const skills = [
   {
@@ -727,9 +658,17 @@ export const d20Facts = [
   "This site has a command palette. Press ⌘K.",
 ];
 
+// Full write-ups: internships first, then projects, read as one sequence.
+export const articles = [
+  ...caseStudies.filter((c) => c.kind === "work" && !c.brief),
+  ...caseStudies.filter((c) => c.kind === "project" && !c.brief),
+];
+
+export const articlePath = (c: { kind: "work" | "project"; slug: string }) =>
+  `/${c.kind === "work" ? "work" : "projects"}/${c.slug}`;
+
 export const paletteIndex = [
   { label: "Intro", href: "/#top", group: "Sections" },
-  { label: "Currently", href: "/#now", group: "Sections" },
   { label: "Work", href: "/#work", group: "Sections" },
   { label: "Projects", href: "/#projects", group: "Sections" },
   { label: "Honours", href: "/#honours", group: "Sections" },
@@ -737,9 +676,9 @@ export const paletteIndex = [
   { label: "Beyond the Terminal", href: "/#beyond", group: "Sections" },
   ...(agentEnabled ? [{ label: "Ask the agent", href: "/ask", group: "Pages" }] : []),
   { label: "Contact", href: "/contact", group: "Pages" },
-  ...caseStudies.map((c) => ({
+  ...articles.map((c) => ({
     label: c.title,
-    href: `/work/${c.slug}`,
+    href: articlePath(c),
     group: c.kind === "work" ? "Work Articles" : "Project Articles",
   })),
 ];

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Article from "@/components/article/Article";
 import { articlePath, articles } from "@/lib/data";
 
-const pages = articles.filter((c) => c.kind === "work");
+const pages = articles.filter((c) => c.kind === "project");
 
 export function generateStaticParams() {
   return pages.map((c) => ({ slug: c.slug }));

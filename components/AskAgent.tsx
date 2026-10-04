@@ -14,10 +14,10 @@ const suggestions = [
   "What does he do outside of code?",
 ];
 
-// Turn /work/<slug> paths in the agent's answer into real links.
+// Turn /work/<slug> and /projects/<slug> paths in the agent's answer into real links.
 function withLinks(text: string) {
-  return text.split(/(\/work\/[a-z0-9-]+)/g).map((part, i) =>
-    /^\/work\/[a-z0-9-]+$/.test(part) ? (
+  return text.split(/(\/(?:work|projects)\/[a-z0-9-]+)/g).map((part, i) =>
+    /^\/(?:work|projects)\/[a-z0-9-]+$/.test(part) ? (
       <Link key={i} href={part} className="link-und text-copper">
         {part}
       </Link>
