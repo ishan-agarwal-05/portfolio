@@ -7,7 +7,7 @@ const entries = [education.university, education.school];
 export default function EducationSection() {
   return (
     <section id="education" className="mx-auto max-w-content px-5 py-24">
-      <SectionHeading index="03 / education" title="Education" />
+      <SectionHeading index="04 / education" title="Education" />
       <div>
         {entries.map((e, i) => (
           <Reveal key={e.name} delay={i * 0.04}>

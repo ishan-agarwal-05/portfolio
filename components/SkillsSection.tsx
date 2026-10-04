@@ -6,7 +6,7 @@ export default function SkillsSection() {
   return (
     <section id="skills" className="mx-auto max-w-content px-5 py-24">
       <SectionHeading
-        index="04 / skills"
+        index="03 / skills"
         title="Skills"
         sub="What I've used across the work and projects above."
       />
