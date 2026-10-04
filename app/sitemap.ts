@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: site.url, priority: 1 },
     ...(agentEnabled ? [{ url: `${site.url}/ask` }] : []),
     { url: `${site.url}/contact` },
+    { url: `${site.url}/write-ups` },
     ...articles.map((c) => ({ url: `${site.url}${articlePath(c)}` })),
   ];
 }

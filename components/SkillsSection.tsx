@@ -1,6 +1,12 @@
-import { skills } from "@/lib/data";
+import { honours, skills } from "@/lib/data";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
+
+// Honours sit in the toolbox as one more group: short titles, at a glance.
+const groups = [
+  ...skills,
+  { group: "Honours & certifications", items: honours.map((h) => h.title) },
+];
 
 export default function SkillsSection() {
   return (
@@ -8,10 +14,10 @@ export default function SkillsSection() {
       <SectionHeading
         index="03 / toolbox"
         title="Toolbox"
-        sub="What I've used across the work and projects above."
+        sub="What I've used across the work and projects above, and a few honours."
       />
       <div className="grid gap-10 sm:grid-cols-2">
-        {skills.map((g, i) => (
+        {groups.map((g, i) => (
           <Reveal key={g.group} delay={i * 0.04}>
             <div>
               <h3 className="microlabel border-b border-line pb-2 text-copper">{g.group}</h3>

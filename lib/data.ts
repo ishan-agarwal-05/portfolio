@@ -61,25 +61,34 @@ export const caseStudies: CaseStudy[] = [
       "The robots in Hyundai's Singapore factory run on programs written in Kawasaki AS, a low-level language, in files that run to tens of thousands of lines. The simulation software, NVIDIA Isaac Sim, works more like a flow chart: you connect blocks for things like moving the arm or picking up a part with the suction cup. To simulate a robot, an engineer had to read through its source code and rebuild it by hand as one of these flow charts, called an action graph. That took about a week per subprogram, and a single cell of the factory has more than forty. In the last three months of my internship I built a tool to speed that up.",
     sections: [
       {
-        heading: "How it works",
+        heading: "Picking an approach",
         body: [
-          "I compared seven ways of doing it and built small versions of a few. A normal parser that converts the code using fixed rules was the obvious option, but the robot code varies too much to write all the rules in advance. An AI agent handled that variety much better.",
-          "Isaac Sim can run Python, so the agent writes a Python script that builds the action graph, and the same script builds the same graph every time. The question then became how to get the agent to write good Python. The answer was to give it as much context as I could: rules for translating AS code into graph structures, a list of the blocks the team had already built, style guides, and examples I had checked by hand.",
-          "All of that lives as plain files in the team's repository, so they can keep adding rules and examples after I left, and it isn't tied to one AI model. I used Claude Code in VS Code because it gave the best results, but the company's own model, or one hosted on their GPU cluster, could work from the same files.",
+          "The brief was one sentence: automate making action graphs from robot programs. There was no spec and nothing like it in the team yet, so I started by writing down how engineers did it by hand, step by step, and where the time went. I agreed the scope with the team lead before building anything.",
+          "Then I compared seven approaches and built small versions of a few: a hand-written parser, a local LLM, Copilot-style assistants, a custom pipeline calling an LLM API, and an AI agent working from documentation. A parser that converts the code with fixed rules was the most predictable, but Kawasaki AS has far too many edge cases to write all the rules in advance. An AI agent handled that variety much better.",
         ],
       },
       {
-        heading: "What was hard",
+        heading: "How it works",
         body: [
-          "Mostly figuring out how to do things in Python at all. Isaac Sim expects you to build action graphs by clicking around in its interface. There are Python ways to do the same things, but a lot of them aren't documented, so I worked them out from the installed source code. Four of them didn't behave the way the documentation says, and I put the workarounds into a shared helper file so nobody has to find them again.",
-          "The setup made it harder too. The scene wasn't fully set up yet, so moves could land slightly off from the real factory even with the right coordinates, and I couldn't properly compare the simulation against videos of the real robots. Fixing that was a separate project. The computer I wrote code on also couldn't run Isaac Sim, so every script had to be copied over to an offline GPU machine before I could test it.",
+          "Isaac Sim can run Python, so the agent writes a Python script for each subprogram, and the script builds the action graph. The script itself is ordinary code. It builds the same graph every time it runs, and an engineer can read it, diff it and review it like anything else. The AI is in the writing of the script, and that's the part that needs checking.",
+          "So most of my time went into what the agent works from, to get that Python as good as possible: dozens of markdown files of translation rules (this kind of AS code becomes this graph structure), a catalogue of the primitive and compound nodes the team had built, style guides, a folder of example scripts I'd verified by hand, like a bumper pick, and prompts for starting a new agent session in the repository.",
+          "All of it lives as plain files in the team's git repository, so the team can keep adding rules and examples after I left, and it isn't tied to one AI model. I used Claude Code inside VS Code, since the team already works in VS Code and it gave the best results. The company's internal assistant was available but weaker at this. A company model, or an open-weight model hosted on their GPU cluster, could work from the same files.",
+        ],
+      },
+      {
+        heading: "Getting Python to do what the interface does",
+        body: [
+          "The hardest part was doing everything in Python at all. Isaac Sim expects you to build action graphs by clicking around in its interface. There are Python APIs for the same things, but a lot of it isn't documented, and the machines had no internet, so I worked it out by reading the installed extension source.",
+          "To know the generated graphs were right, I first built the pick sequence for the windshield wiper by hand and had the senior developer check it: the node structure, joint correction values, and how the branches split and join again. Then I compared the generated versions against it, diffing the USD files, until they matched.",
+          "That diffing turned up four behaviours that don't match the documentation. og.Attribute.set() only changes the value at runtime and doesn't save it to the USD file. Relationship-type attributes need CreateRelationship().SetTargets() instead of the documented setter. Make Array inputs reset to zero unless the calls happen in a particular order. And og.Controller.connect() doesn't work for connections between compound graphs, so those have to be written by hand. I put the workarounds into a shared helper module, codegen_utils.py, so nobody has to find them again.",
+          "The setup slowed things down too. The computer I wrote code on couldn't run Isaac Sim, so every script went over SFTP to an offline GPU machine for testing. And the scene wasn't fully set up yet, so moves could land slightly off from the real factory even with the right coordinates, which meant I couldn't properly compare the simulation against videos of the real robots. A separate project was fixing that.",
         ],
       },
       {
         heading: "Where it ended up",
         body: [
-          "By the time I left, the tool worked: you could ask it for a subprogram and it would write the script. It hadn't been tested properly across the whole cell, and an engineer still has to check and fix every graph it makes, which is where the estimate of about four hours per subprogram comes from.",
-          "The team was impressed by how much work it could save. I also presented the idea to the VP, as slides rather than a demo, and she agreed we should be using AI to speed up engineering work like this.",
+          "It works on the pick sequences I tested it on: you ask it for a subprogram and it writes a script that builds the graph, and those were tested properly. It hadn't been tried on other cells or on vision nodes yet, and there wasn't time to test how much it changes the engineers' day-to-day work. An engineer still checks and fixes every generated graph, which is where the estimate of about four hours per subprogram comes from, against about a week by hand.",
+          "The team was impressed by how much work it could save. I filed the internal AI use-case submission for it, and presented the idea to the VP as slides rather than a live demo. She agreed we should be using AI to speed up engineering work like this. The documentation doubles as the handover, and I drafted an acceptance test for it: an engineer who has never seen the project builds a compound node using only the docs.",
         ],
       },
     ],
@@ -100,27 +109,35 @@ export const caseStudies: CaseStudy[] = [
     ],
     stack: ["Python", "Omniverse Kit", "USD", "YAML", "Model-View-Delegate"],
     summary:
-      "Hyundai's innovation centre in Singapore is building a digital twin of its EV factory in NVIDIA Isaac Sim. I spent my first three months on the simulation team building the parts of the platform around the simulation itself: the screens engineers use to run it, the report they get at the end, and an audit of how many parts in the scene could be traced back to the factory's other systems.",
+      "Hyundai's innovation centre in Singapore is building a digital twin of its EV factory in NVIDIA Isaac Sim, starting with one cell of the factory as a proof of concept. I spent my first three months on the simulation team building the parts of the platform around the simulation itself: the screens engineers use to run it, the report they get at the end, and an audit of how many parts in the scene could be traced back to the factory's other systems.",
     sections: [
+      {
+        heading: "Getting set up",
+        body: [
+          "The first job was getting Isaac Sim 5.1 running on a machine with no internet access. It kept trying to download 3D assets and failing, so I went through the logs to find exactly which files were missing and which functions were asking for them, and wrote up the manual install for whoever came next, since nobody had recorded it before. My own laptop couldn't run Isaac Sim either, so I set up a way to write code locally and sync it to the GPU server to test.",
+        ],
+      },
       {
         heading: "What I built",
         body: [
-          "In January I built an extension that shows records from an internal database as tables inside Isaac Sim. The dropdown options live in a YAML file, so they can change without touching the code.",
-          "In February I built a report that is generated, and opens in the browser, at the end of every simulation run: joint angles, tool paths, work targets and a parts list, with a CSV fallback for when the external service is down. I also built the DT Sim Manager, the landing page that launches the platform's simulations.",
-          "In March I built the window for New Product Introduction simulations. I wireframed it in FigJam and went through it with the team lead before writing any code, which saved a lot of back and forth.",
+          "In January I built an extension that shows live records from an internal database as tables inside Isaac Sim, using a Model-View-Delegate structure. The dropdowns for car model and station come from a YAML file, so they can change without touching the code.",
+          "In February I built the end-of-run report. When a simulation finishes, it generates an HTML report and opens it in the browser: joint angles for each robot, tool paths, work targets pulled from external tables, and a list of every part in the scene. If the external service is down, it falls back to CSV files. Hooking into the end of a run without disturbing the simulation meant learning the simulation lifecycle properly, and along the way I fixed bugs with stale state when the scene changed and with windows closed mid-run. I also built the DT Sim Manager, the landing page that launches the platform's simulations.",
+          "In March I merged the baseline simulation's two extensions into one and redid how it loads the scene: create an empty stage, add the scene as a sublayer, flatten it, then apply the starting configuration. The old approach kept failing, and I only found out why by reading Isaac Sim's own source. I also built the window for New Product Introduction simulations, with three states: setup (choosing a scenario and reviewing clashes), the running simulation, and a review afterwards. I wireframed it in FigJam and went through it with the team lead before writing any code, which saved a lot of back and forth.",
         ],
       },
       {
         heading: "The parts audit",
         body: [
-          "The idea was that the simulation could be a source of truth for every part in the factory. Each asset in the scene can carry a label linking it to the same part in other systems, like the logistics records or the CAD drawings. My job was to go through those systems, find the matching information and put it onto the assets in the simulation.",
-          "When I started, about 31% of parts could be traced. I tagged everything I could match and got it to 16 of 36 parts, or 44%. The rest wasn't something code could fix: the information was either missing from the other systems or had never been copied into the scene. I wrote up what would need to change to get past the 80% target.",
+          "The idea was that the simulation could be a source of truth for every part in the factory. Each asset in the scene can carry a label that links it to the same part in other systems, like the logistics records or the CAD drawings. The target was more than 80% of parts linked. The report said about 31%, and people assumed it was a bug in the code.",
+          "I exported the whole scene to get the real list, which came to 36 physical parts, and checked each one against the mapping spreadsheet and the external systems. The spreadsheet was protected against being read by code, so I wrote a workaround to open it. I also fixed the filter so helper objects that aren't real parts stopped counting. Then I tagged every part I could match, which got it to 16 of 36, or 44%.",
+          "The rest wasn't something code could fix. Some identifiers were in the mapping file but had never been copied into the scene, some parts had no identifiers anywhere, and one asset in the simulation didn't exist in any other system. I wrote it up by cause, so the team could fix the data: tagging six more parts would get to 61%, and closing all twenty gaps would get above 95%.",
         ],
       },
       {
         heading: "Working there",
         body: [
-          "The team was great and always willing to help. We had regular syncs with NVIDIA's engineers, which was cool to be part of. The hard part was the setup. The machines that ran Isaac Sim were offline, so I couldn't use AI tools on them, and every change meant copying files across before I could test anything.",
+          "The team was great and always willing to help. We had regular syncs with NVIDIA's engineers, which was cool to be part of. I also wrote the Confluence documentation for the reporting and UI systems, made video walkthroughs for onboarding, and summarised the NVIDIA GTC 2026 announcements for the team, picking out what would actually matter for our work.",
+          "The hard part was the setup. The machines that ran Isaac Sim were offline, so I couldn't use AI tools on them, and every change meant copying files across before I could test anything. I once lost most of a day to a bug that turned out to be a senior developer's file I hadn't copied over, and after that I always checked the full diff before transferring.",
         ],
       },
     ],
@@ -139,20 +156,27 @@ export const caseStudies: CaseStudy[] = [
     repo: "https://github.com/ishan-agarwal-05/dms_personal",
     repoNote: "my own rebuild, not company code",
     summary:
-      "TechFour builds software for larger companies, and almost every project needed the same basics: a login system, a way to send emails, SMS or WhatsApp messages, and file uploads. They were being rebuilt every time. My internship was to build them once, as separate microservices that any project could plug in.",
+      "TechFour is a software company of over a hundred people that builds systems for larger companies, and almost every project needed the same basics: a login system, a way to send emails, SMS or WhatsApp messages, and file uploads. They were being rebuilt from scratch every time. My internship was to build them once, as separate microservices that any project could plug in.",
     sections: [
       {
-        heading: "What I built",
+        heading: "The three services",
         body: [
-          "Three services, in Flask with MySQL. The communications service sends emails, SMS and WhatsApp messages, including OTPs, and runs scheduled jobs. It's generic enough for the other services to use. The document service handles uploading and deleting files.",
-          "The user management service covers registration, login and the landing page, and it uses the other two: OTPs come from the communications service, and profile pictures go through the document service. Each service also has an admin dashboard, since the clients' admins aren't programmers, and I built those as well.",
+          "All three are Flask services on MySQL with connection pooling. The communications service sends emails, SMS and WhatsApp messages, including OTPs, and runs anything time-based on a cron scheduler. It had to be generic and easy to extend, because almost every piece of software needs to send messages.",
+          "The document service handles uploading and deleting files, with metadata validation and files organised by date. The user management service covers registration, login with JWT and bcrypt, OTP verification, password reset and the landing page. It's built on the other two: OTPs go out through the communications service, and profile pictures are stored through the document service.",
+          "The clients' admins aren't programmers, so each service also needed an admin dashboard, and I built those UIs in Flutter. Building a real client against each API was also the quickest way to find where it was awkward to use. Since the services had to work for any project, I spent more time on the shape of each API than I would have for a one-off feature.",
         ],
       },
       {
-        heading: "What I learned",
+        heading: "How the company worked",
         body: [
-          "This is where I learned how coding works at a company: Jira, branch and commit conventions, code review, documenting every endpoint in Swagger, and SonarQube checks before anything gets merged. They didn't expect much from interns and mostly wanted us to learn, which suited me.",
-          "The best part was where I sat, next to Sahil, who ran the company's servers, CI/CD and deployments. He'd tell me what he was about to do, give me a quick explanation and something to read at home, and then show me when he actually did it. That's how I learned Linux, firewalls, Nginx and load balancing, and how to set up a new project's repository and CI/CD pipeline.",
+          "This is where I learned how coding works at a company. Work was tracked in Jira, there were written rules for branch names, commit messages and branching, and code went through a self-hosted GitLab. Every endpoint was documented in OpenAPI and served through Swagger UI as it was built, and SonarQube checked every service for bugs, code smells and security issues. I kept fixing what it flagged until the services came back clean. They didn't expect much from interns and mostly wanted us to learn, which suited me.",
+        ],
+      },
+      {
+        heading: "Learning deployment from Sahil",
+        body: [
+          "The best part was where I sat, next to Sahil, who ran the company's GitLab, servers, CI/CD and deployments. He'd tell me what he was about to do, give me a quick explanation and something to read at home, and then show me when he actually did it on the production setup.",
+          "That's how I learned Linux, firewalls, Nginx, reverse proxying and load balancing, and how to set up a new project's repository and CI/CD pipeline. It's hard to get that from a course, because so much of it is small operational details nobody writes down.",
         ],
       },
     ],
@@ -166,7 +190,7 @@ export const caseStudies: CaseStudy[] = [
     role: "AI Engineering Intern",
     period: "Dec 2024 – Jan 2025",
     oneLiner:
-      "Six weeks with a team building a retrieval-augmented chatbot over internal documents, over the December holidays.",
+      "A retrieval-augmented chatbot over several hundred internal policy and research documents, built with LangChain, LangSmith and Streamlit.",
     metrics: [],
     stack: ["Python", "LangChain", "LangSmith", "Streamlit", "RAG"],
     summary: "",
@@ -205,19 +229,20 @@ export const caseStudies: CaseStudy[] = [
     repo: "https://github.com/arshinsikka/CS4248_G02_QA",
     repoNote: "group repo, 14 of 18 commits are mine",
     summary:
-      "A group project on extractive question answering: given a passage and a question, find the span of words in the passage that answers it. We fine-tuned RoBERTa on SQuAD and got 84.28 exact match. The five of us are close friends; the others had heavy course loads or an internship that semester, so one teammate and I did the coding and experiments, and the other three wrote the report.",
+      "A group project on extractive question answering: given a passage and a question, find the span of words in the passage that answers it. We fine-tuned RoBERTa-base on SQuAD v1.1 and got 84.28 exact match and 90.93 F1. The five of us are close friends; the others had heavy course loads or an internship that semester, so one teammate and I did the coding and experiments, and the other three wrote the report.",
     sections: [
       {
-        heading: "What we found",
+        heading: "Where the mistakes were",
         body: [
-          "Instead of only taking the model's top answer, I had it rank its top candidates and looked at where the right answer landed. For 95.1% of questions, the correct answer was somewhere in its top five. So most of its mistakes were about ranking: it found the answer but put another one first. When that happened, its top two scores were usually very close together.",
+          "The model scores every possible answer span, but normally you only ever use the top one. I had it return its top candidates instead and checked where the right answer landed. With the top five, the correct span was there for 95.1% of questions. If you could always pick it, exact match would go from 84.28 to 95.11, and F1 from 90.93 to 97.08. So most of the model's mistakes were about ranking: it found the answer but put another one first.",
+          "The gap between its top two scores turned out to be the useful signal. When the right answer was ranked first, the median gap was about 0.60. When the right answer was second, the gap dropped to about 0.11. A small gap meant the model itself wasn't sure.",
         ],
       },
       {
         heading: "The reranker",
         body: [
-          "So we only rerank when the gap between the top two scores is small, below 0.05. In those cases a second, smaller model scores both candidates against the question, and that score is blended with the original. Confident answers are left alone, so they cost nothing extra.",
-          "It changed 55 of the 10,570 answers: 14 went from wrong to right and 1 from right to wrong, which took exact match from 84.28 to 84.40. That's a small gain from a single run, so I wouldn't call it significant. Reranking every question, or reranking the top three or five instead of the top two, made results worse.",
+          "So we only rerank when that gap is below 0.05. In those cases a small sentence-embedding model (all-MiniLM-L6-v2) scores both candidates against the question, and that score is blended evenly with the original one. Confident answers are left alone, so they cost nothing extra.",
+          "It changed 55 of the 10,570 answers: 14 went from wrong to right and 1 from right to wrong, which took exact match from 84.28 to 84.40 and F1 from 90.93 to 91.04. That's a small gain from a single run, so I wouldn't call it significant. We also tried the obvious alternatives: reranking every question, reranking the top three or five instead of the top two, and a heavier cross-encoder. The first two made results worse, and the cross-encoder cost more without doing consistently better. The repo keeps all of those runs.",
         ],
       },
     ],
@@ -240,14 +265,15 @@ export const caseStudies: CaseStudy[] = [
       {
         heading: "What we built",
         body: [
-          "We surveyed students first, and it was a real problem. Then we built the pipeline: process the audio with FFmpeg, transcribe it, fix technical terms in the transcript using the lecture slides, and have an LLM turn the result into structured notes. It all ran in the background with Celery and Redis, since an hour-long lecture takes a while. I led the full-stack development, and the notes it produced were really good.",
+          "We surveyed students across NUS first, and it was a real problem. Then we built the pipeline. FFmpeg processes the audio, it gets transcribed, technical terms in the transcript get corrected using the lecture slides, and then an LLM turns it into summaries and study notes. We fixed the transcript before summarising because when a transcript gets a technical term wrong, the summary repeats the wrong term with total confidence.",
+          "An hour-long lecture takes a while to process, so everything ran in the background through Celery and Redis rather than inside a web request. The backend was Python with Alembic for database migrations, and the frontend was React. I led the full-stack development, and the notes it produced were really good.",
         ],
       },
       {
         heading: "Why we stopped",
         body: [
-          "The next step was getting into universities, through things like Canvas integrations or pilots. That turned out to mean a lot of paperwork and a very slow process, probably two or three years before anything happened. We reached out to a lot of people and didn't hear back from many. Around the same time TurboScribe, a well-funded competitor, took off with students directly.",
-          "So in December 2025 we wrapped it up. I learned a lot from it, from pitching and presenting to building the pipeline.",
+          "The next step was getting into universities, through things like Canvas integrations or pilots with a course. That turned out to mean a lot of paperwork and a very slow process, probably two or three years before anything happened. We reached out to a lot of people and didn't hear back from many. Around the same time TurboScribe, a competitor with a lot of funding, took off with students directly, which closed off the other route.",
+          "So in December 2025 we wrapped it up. I learned a lot from it, from surveying users and pitching to building the pipeline.",
         ],
       },
     ],
@@ -269,19 +295,21 @@ export const caseStudies: CaseStudy[] = [
       { src: "/photos/eg1311-circuit.jpg", w: 1600, h: 897, alt: "Tinkercad circuit: Arduino Uno, HC-SR04 ultrasonic sensor, two L293D H-bridges driving three DC motors, and a servo on a 9V supply", caption: "The circuit as I designed it in Tinkercad." },
     ],
     summary:
-      "EG1311 is the Design and Make module. The course was a 3 cm bump, a 10 cm slope and a 30 cm wall, and the robot had to get across, launch a ping-pong ball over the wall and come back, with nobody touching it. The rest of my team weren't CS students, so I wrote all the code and designed the circuit. It was a lot of fun.",
+      "EG1311 is the Design and Make module. The course was a 3 cm bump, a 10 cm slope and a 30 cm wall, and the robot had to get across, launch a ping-pong ball over the wall and come back to the start, with nobody touching it. The rest of my team weren't CS students, so I wrote all the code and designed the circuit, and we built the body together with laser-cut parts. It was a lot of fun.",
     sections: [
       {
         heading: "How it works",
         body: [
-          "Instead of driving for a set number of seconds, the robot checks an ultrasonic sensor on every loop to measure how far it is from the wall. When it's close enough, it stops, waits three seconds to settle, swings a servo to launch the ball, and reverses. The three drive motors run off two L293D motor drivers, all from one 9V battery.",
+          "The simple way to do this is to drive forward for a fixed time and then fire, but that breaks as soon as the floor grips differently or the battery runs down. So the robot checks an HC-SR04 ultrasonic sensor on every loop, times the echo and turns it into a distance. When the distance falls into a narrow band near the wall, it stops, waits three seconds for the body to settle, swings a servo to launch the ball, and reverses.",
+          "The three drive motors run off two L293D motor drivers. The sensor had to be mounted high, or the bump and the slope looked like the wall and the robot stopped halfway. We raised it on a propylene board braced with two ice-cream sticks, which wasn't pretty but worked.",
         ],
       },
       {
         heading: "What went wrong",
         body: [
-          "A lot. The wires were finicky and kept coming loose, so it failed plenty of times in testing. We went through four sets of wheels before one could get over the bump and up the slope, and ended up sticking anti-slip mat on them for grip. The sensor had to be raised so it wouldn't mistake the bump for the wall, and the robot kept veering right because one motor was weaker, which we fixed by angling the front wheels slightly.",
-          "On the day, it worked, and I got an A+ for the robot's run.",
+          "A lot. We went through four sets of wheels. 8 cm cardboard wheels couldn't get over the bump. 10 cm laser-cut acrylic wheels cleared the bump but slid on the slope. Rubber bands added grip but peeled off, because hot glue doesn't hold on acrylic. Strips of anti-slip mat finally stuck and gripped. The ball holder took a few tries too: we tilted it past 90 degrees, raised it, and gave it a curved lip so the ball stayed in over the bumps but still flew out when the servo fired.",
+          "The robot kept veering right. That turned out to be the front-right motor being weaker than the others, which we confirmed by testing motor speeds and fixed by angling the front wheels slightly left. Power was another problem. A separate 6V battery pack for the motors couldn't supply enough current, so they stuttered, and running everything from one 9V battery fixed it. And the wires were finicky: they kept coming loose and shorting on the breadboard until we replaced them with a proper connector, so it failed plenty of times in testing.",
+          "On the day, it worked, and I got an A+ for the robot's run. Looking back, I'd make it slow down as it approaches the wall, because the sensor reading blocks while it waits for the echo, and at higher speed it can skip past the firing band between readings. We tuned the speed until that stopped happening.",
         ],
       },
     ],
@@ -298,13 +326,20 @@ export const caseStudies: CaseStudy[] = [
     stack: ["Python", "pytest", "Flask", "cryptography"],
     repoNote: "private until the course ends, by course policy",
     summary:
-      "I got into security because CTFs sounded fun. I still haven't done one, but I took CS2107, got an A, and liked it enough to make cybersecurity one of my specialisations, which is how I ended up in CS4236. Each week the course teaches something, we add it to our own cryptography library, and then they set up a server that uses it with a vulnerability, and I have to get in.",
+      "I got into security because CTFs sounded fun. I still haven't done one, but I took CS2107, got an A, and liked it enough to make cybersecurity one of my specialisations, which is how I ended up in CS4236. The course was recently redesigned to be about using cryptography correctly in real systems rather than proving theorems, and the whole semester is built around one library, educrypto, that I add to every week.",
     sections: [
+      {
+        heading: "How each week works",
+        body: [
+          "Each week the course publishes a feature request with the API and how it should behave, a public pytest suite, and a small Flask service that uses the library with a vulnerability in it. I implement the feature in educrypto until the tests pass, then write the attack that breaks into the service. The bug is never in the maths itself. It's in how the cryptography is used: a reused key, a setting left at an unsafe default, a ciphertext nobody checks.",
+        ],
+      },
       {
         heading: "So far",
         body: [
-          "We're still on symmetric-key cryptography, where both sides share the same key. One I remember is a MAC forgery: the server's MAC didn't mix the secret key in properly, so it was effectively a known hash, and I could change a message and make a valid tag for it myself.",
-          "So far the library has the one-time pad, a block cipher, block cipher modes, MACs and hash functions, each with an attack to go with it. Public-key cryptography, like RSA and digital signatures, comes later in the semester.",
+          "We're still on symmetric-key cryptography, where both sides share the same key. The library has encoding and the one-time pad, a block cipher (a configurable substitution-permutation network), and block cipher modes. The attack there was on CBC run with a fixed key and IV, where the first block of ciphertext gave away which message had been encrypted.",
+          "Then MACs. One I remember is a forgery where the server's MAC didn't mix the secret key in properly, so it was effectively a known hash, and I could change a message and make a valid tag for it myself. Most recently, hash functions built three ways (Davies-Meyer, Merkle-Damgård and a sponge), with collisions found for both targets.",
+          "Public-key cryptography comes next: RSA, Diffie-Hellman, El Gamal and digital signatures, each with its own attack, and then how these fit together in real protocols.",
         ],
       },
     ],
@@ -381,7 +416,7 @@ export const experiences: Experience[] = [
     location: "Singapore",
     stack: ["Python", "NVIDIA Isaac Sim", "OmniGraph", "USD"],
     summary:
-      "Six months on the simulation team building a digital twin of the EV factory in NVIDIA Isaac Sim. For the first three months I built UI extensions and a report generated after every simulation run. For the last three, I built a tool that uses an AI agent to turn robot programs into simulation logic, work that used to take an engineer about a week per program.",
+      "Six months on the simulation team building a digital twin of the EV factory in NVIDIA Isaac Sim. For the first three months I built UI extensions, an automatic end-of-run report and a parts traceability audit. For the last three, I built a tool that uses an AI agent to turn robot programs into simulation logic, work that used to take an engineer about a week per program.",
     articles: [
       { label: "Action Graph Code Generator", slug: "action-graph-generator" },
       { label: "Digital Twin Platform", slug: "digital-twin-platform" },
@@ -404,7 +439,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Python", "LangChain", "LangSmith", "Streamlit"],
     summary:
-      "Six weeks with a team building a retrieval-augmented chatbot over internal documents. With the December holidays in the middle, most of it was onboarding and training, getting to know the team's work and code.",
+      "Worked on a retrieval-augmented chatbot over several hundred internal policy and research documents, so teams could look up policy and find earlier work instead of redoing it. Built with LangChain, with LangSmith for prompt management, tracing and offline evaluation, and a Streamlit interface.",
     articles: [],
   },
   {
@@ -500,11 +535,12 @@ export type Photo = { src: string; w: number; h: number; alt: string; caption?: 
 export const beyond: { title: string; body: string; photos?: Photo[] }[] = [
   {
     title: "Tabletop RPGs",
-    body: "I'll play almost any system, not just D&D. Lately it's been Call of Cthulhu. I've never been the GM. At the table I'm pretty cooperative, and I nearly always play a big, physical character rather than a mage. It's an escape, a reason to hang out with friends, and we end up making a good story together. It fits with how much fantasy I read. I also draw for our campaigns and characters.",
+    body: "I'll play almost any system, not just D&D. Lately it's been Call of Cthulhu. I've never been the GM. At the table I'm pretty cooperative, and I nearly always play a big, physical character rather than a mage. My current one is Rangarangarang, a crocodilian with a two-handed axe. It's an escape, a reason to hang out with friends, and we end up making a good story together. It fits with how much fantasy I read. I also doodle while we play.",
     photos: [
-      { src: "/photos/art-forest.jpg", w: 712, h: 1400, alt: "Coloured pencil drawing of a small figure on a path through a glowing blue forest under a swirling moon", caption: "Coloured pencil, for a campaign." },
-      { src: "/photos/art-shadow-and-her-light.jpg", w: 1143, h: 1400, alt: "Blue pen sketch of a hooded character holding a small light, titled The Shadow and Her Light", caption: "The Shadow and Her Light. Pen on lined paper." },
-      { src: "/photos/art-canary-crest.jpg", w: 990, h: 1400, alt: "Pencil sketch of a heraldic crest with a canary on a shield and a banner reading Canary", caption: "A crest for a character's family." },
+      { src: "/photos/ttrpg-rangarangarang.jpg", w: 514, h: 835, alt: "Character sheet portrait of Rangarangarang, a crocodilian warrior with a satchel", caption: "My character, Rangarangarang." },
+      { src: "/photos/art-shadow-and-her-light.jpg", w: 1143, h: 1400, alt: "Blue pen sketch of a hooded character holding a small light, titled The Shadow and Her Light", caption: "An NPC from our campaign, doodled at the table." },
+      { src: "/photos/art-forest.jpg", w: 712, h: 1400, alt: "Coloured pencil drawing of a small figure on a path through a glowing blue forest under a swirling moon", caption: "Coloured pencil." },
+      { src: "/photos/art-canary-crest.jpg", w: 990, h: 1400, alt: "Pencil sketch of a heraldic crest with a canary on a shield and a banner reading Canary", caption: "A crest, doodled during a session." },
     ],
   },
   {
@@ -513,12 +549,16 @@ export const beyond: { title: string; body: string; photos?: Photo[] }[] = [
   },
   {
     title: "Travel",
-    body: "I love travelling, and so does my family. We go somewhere about twice a year. In the last three years that's been Bali, Vietnam, the UK, Scandinavia, South Africa, Japan, Malaysia and a lot of places in India.",
+    body: "I love travelling, usually with my family. A few favourite photos from recent trips.",
     photos: [
+      { src: "/photos/travel-da-nang.jpg", w: 1600, h: 900, alt: "Sunset over the sea at a beach, with swimmers in silhouette", caption: "Sunset in Da Nang." },
+      { src: "/photos/travel-vietnam.jpg", w: 1600, h: 900, alt: "Ishan on a viewing platform above green karst mountains and a winding road", caption: "Northern Vietnam." },
+      { src: "/photos/travel-batu-caves.jpg", w: 788, h: 1400, alt: "Stairs leading up inside a huge limestone cave, open to the sky at the top", caption: "Batu Caves, Malaysia." },
       { src: "/photos/travel-skye.jpg", w: 1600, h: 900, alt: "Green hills, cliffs and a winding road at the Quiraing on the Isle of Skye", caption: "Isle of Skye, Scotland." },
-      { src: "/photos/travel-kyoto-river.jpg", w: 1600, h: 900, alt: "Ishan smiling in front of a river in Kyoto at dusk", caption: "Kyoto." },
+      { src: "/photos/travel-edinburgh.jpg", w: 1600, h: 900, alt: "Old houses along a small river in Dean Village, Edinburgh", caption: "Dean Village, Edinburgh." },
       { src: "/photos/travel-fuji.jpg", w: 788, h: 1400, alt: "Ishan standing in a street with Mount Fuji behind him", caption: "Mount Fuji." },
       { src: "/photos/travel-nara.jpg", w: 788, h: 1400, alt: "Ishan crouching next to a resting deer in Nara park", caption: "Nara, with a deer." },
+      { src: "/photos/travel-kyoto-river.jpg", w: 1600, h: 900, alt: "Ishan smiling in front of a river in Kyoto at dusk", caption: "Kyoto." },
     ],
   },
   {
@@ -541,9 +581,9 @@ export const d20Facts = [
   "I'm minoring in both Mathematics and Quantitative Finance.",
   "I always play the big, physical character. Never the mage.",
   "I read web novels every day, mostly fantasy, cultivation and regression stories.",
-  "My family travels about twice a year. Japan, the UK and South Africa were some recent ones.",
+  "My current character is Rangarangarang, a crocodilian with a two-handed axe.",
   "My specialisations are AI and cybersecurity.",
-  "I draw art for our campaigns and characters.",
+  "I doodle during our sessions. The NPCs usually end up in the margins.",
   "State Rank 1 in Uttar Pradesh in VVM, a national science talent search.",
   "I've never done a CTF, even though CTFs are why I got into security.",
   "My EG1311 robot worked on the day. It had failed plenty of times before that.",
@@ -563,7 +603,7 @@ export const paletteIndex = [
   { label: "Intro", href: "/#top", group: "Sections" },
   { label: "Work", href: "/#work", group: "Sections" },
   { label: "Projects", href: "/#projects", group: "Sections" },
-  { label: "Honours", href: "/#honours", group: "Sections" },
+  { label: "Write-ups", href: "/write-ups", group: "Pages" },
   { label: "Toolbox", href: "/#skills", group: "Sections" },
   { label: "Beyond work", href: "/#beyond", group: "Sections" },
   ...(agentEnabled ? [{ label: "Ask the agent", href: "/ask", group: "Pages" }] : []),

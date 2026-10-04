@@ -9,6 +9,7 @@ import { agentEnabled, site } from "@/lib/data";
 const allLinks = [
   { label: "Work", href: "/#work" },
   { label: "Projects", href: "/#projects" },
+  { label: "Write-ups", href: "/write-ups" },
   { label: "Beyond", href: "/#beyond" },
   { label: "Ask", href: "/ask" },
   { label: "Contact", href: "/contact" },
@@ -39,7 +40,7 @@ export default function Nav() {
         </Link>
 
         <div className="hidden items-center gap-5 font-mono text-[12px] uppercase tracking-wider text-muted sm:flex">
-          {links.slice(0, 5).map((l) => (
+          {links.map((l) => (
             <Link key={l.href} href={l.href} className="transition-colors hover:text-copper">
               {l.label}
             </Link>
