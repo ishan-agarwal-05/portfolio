@@ -1,31 +1,27 @@
 import { beyond, reading, ttrpgSystems } from "@/lib/data";
 import D20 from "./D20";
+import Photos from "./Photos";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 
 export default function BeyondSection() {
   return (
     <section id="beyond" className="mx-auto max-w-content px-5 py-24">
-      <SectionHeading
-        index="05 / beyond"
-        title="Beyond the terminal"
-        sub="The parts of me that don't compile."
-      />
-      <div className="grid gap-4 sm:grid-cols-2">
-        {beyond.map((b, i) => (
-          <Reveal key={b.title} delay={(i % 2) * 0.04} className="h-full">
-            <div className="h-full border border-line bg-surface p-6">
-              <h3 className="font-display text-2xl text-ink">{b.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{b.body}</p>
-              {(b.title === "Tabletop RPGs" || b.title === "Reading") && (
-                <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
-                  {(b.title === "Tabletop RPGs" ? ttrpgSystems : reading).map((s) => (
-                    <span key={s.name} className="font-mono text-[11px] text-faint">
-                      <span className="text-copper">{s.name}</span>, {s.note}
-                    </span>
-                  ))}
-                </div>
-              )}
+      <SectionHeading index="04 / beyond" title="Beyond work" />
+      <div className="space-y-14">
+        {beyond.map((b) => (
+          <Reveal key={b.title}>
+            <div className="grid gap-6 lg:grid-cols-[18rem_1fr] lg:gap-12">
+              <h3 className="font-display text-3xl text-ink">{b.title}</h3>
+              <div className="min-w-0">
+                <p className="max-w-2xl leading-relaxed text-muted">{b.body}</p>
+                {(b.title === "Tabletop RPGs" || b.title === "Reading") && (
+                  <p className="mt-3 font-mono text-[12px] text-faint">
+                    {(b.title === "Tabletop RPGs" ? ttrpgSystems : reading).map((s) => s.name).join(" · ")}
+                  </p>
+                )}
+                {b.photos && <Photos photos={b.photos} className="mt-6" />}
+              </div>
             </div>
           </Reveal>
         ))}

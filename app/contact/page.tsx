@@ -14,28 +14,28 @@ const channels = [
     label: "Email",
     value: site.email,
     href: `mailto:${site.email}`,
-    note: "The fastest way to reach me. I reply within a day.",
+    note: "The quickest way to reach me.",
   },
   {
     icon: Link2,
     label: "LinkedIn",
     value: "ishan-agarwal-nus",
     href: site.linkedin,
-    note: "For the formal version of everything on this site.",
+    note: "My work history, in LinkedIn form.",
   },
   {
     icon: FolderGit2,
     label: "GitHub",
     value: "ishan-agarwal-05",
     href: site.github,
-    note: "Code for most of the projects here. The internship work stays with the companies.",
+    note: "Code for most of the projects here. Internship code stays with the companies.",
   },
   {
     icon: FileDown,
     label: "Resume",
     value: "one page, PDF",
     href: site.resume,
-    note: "The condensed version, ATS-friendly.",
+    note: "Everything on one page.",
   },
 ];
 
@@ -45,12 +45,11 @@ export default function ContactPage() {
       <Reveal>
         <p className="font-mono text-[11px] uppercase tracking-widest text-copper">contact</p>
         <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-          Let’s talk.
+          Get in touch
         </h1>
         <p className="mt-4 max-w-xl leading-relaxed text-muted">
-          {site.availability}. Based in Singapore. If you’ve read a case study
-          and have questions about the messy parts, those are my favourite
-          conversations.
+          {site.availability}. I&rsquo;m based in Singapore, and email is the best way to
+          reach me.
         </p>
       </Reveal>
       <div className="mt-12 grid gap-4 sm:grid-cols-2">

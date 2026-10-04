@@ -9,8 +9,8 @@ export default function WorkSection() {
     <section id="work" className="mx-auto max-w-content px-5 py-24">
       <SectionHeading
         index="01 / work"
-        title="Four internships, three years"
-        sub="Robotics simulation, backend platforms, applied AI, enterprise software. Each one has a full write-up, including what didn't ship."
+        title="Work"
+        sub="Four internships since 2024."
       />
       <div>
         {experiences.map((e, i) => (

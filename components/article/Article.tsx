@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { articlePath, articles, type CaseStudy } from "@/lib/data";
+import Photos from "@/components/Photos";
 import Reveal from "@/components/Reveal";
 
 export default function Article({ cs }: { cs: CaseStudy }) {
@@ -67,22 +67,9 @@ export default function Article({ cs }: { cs: CaseStudy }) {
         </div>
       </Reveal>
 
-      {cs.slug === "eg1311-robot" && (
+      {cs.photos && (
         <Reveal delay={0.05}>
-          <figure className="mt-14 border border-line bg-surface p-4 sm:p-6">
-            <Image
-              src="/photos/eg1311-circuit.jpg"
-              alt="Tinkercad circuit: Arduino Uno, HC-SR04 ultrasonic sensor, two L293D H-bridges driving three DC motors, and a servo catapult on a 9V supply"
-              width={1600}
-              height={848}
-              className="w-full"
-            />
-            <figcaption className="microlabel mt-3">
-              fig. the circuit as prototyped in Tinkercad. Arduino Uno, HC-SR04
-              ultrasonic sensor, two L293D H-bridges for the three drive motors,
-              and the servo catapult, all on a 9V supply.
-            </figcaption>
-          </figure>
+          <Photos photos={cs.photos} layout="grid" className="mt-14" />
         </Reveal>
       )}
 

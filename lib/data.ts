@@ -10,6 +10,7 @@ export type CaseStudy = {
   stack: string[];
   repo?: string;
   repoNote?: string;
+  photos?: Photo[];
   summary: string;
   sections: { heading: string; body: string[] }[];
   // short entries show on the home page only, with no article of their own
@@ -49,42 +50,36 @@ export const caseStudies: CaseStudy[] = [
     role: "Digital Twin & Simulation Engineering Intern",
     period: "Apr – Jun 2026",
     oneLiner:
-      "An AI code-generation workflow that turns Kawasaki AS robot programs into wired Isaac Sim control graphs: an LLM agent writes a deterministic Python script for each subprogram, taking it from about a week of manual wiring to an afternoon, review included.",
+      "A tool that uses an AI agent to turn Kawasaki robot programs into Isaac Sim action graphs, so a job that took an engineer about a week per program becomes an afternoon of checking.",
     metrics: [
-      { value: "1 wk to ~4 h", label: "per subprogram, including review" },
-      { value: "40+", label: "subprograms per cell; verified on pick sequences so far" },
-      { value: "7", label: "generation approaches evaluated" },
-      { value: "4", label: "undocumented API behaviours reverse-engineered" },
+      { value: "1 wk to ~4 h", label: "per subprogram, including an engineer checking it (estimate)" },
+      { value: "7", label: "approaches compared before picking one" },
+      { value: "4", label: "undocumented Isaac Sim behaviours worked around" },
     ],
     stack: ["Python", "LLM agents", "NVIDIA Isaac Sim", "OmniGraph", "USD", "Kawasaki AS"],
     summary:
-      "HMGICS is building a digital twin of its electric-vehicle factory on NVIDIA Isaac Sim, working toward a software-defined dark factory by 2032. The robots are programmed in Kawasaki AS, an assembly-like language, in files running to tens of thousands of lines. To simulate them, the team rebuilds that logic as Isaac Sim Action Graphs, a visual node-based system a bit like Scratch, from primitive nodes they had built for things like joint and linear moves, suction-cup pick and place, and reparenting scene components. Wiring one subprogram into an Action Graph by hand took roughly an engineering week, and a single cell has forty or more subprograms across multiple robots. Over the last three months of my internship I scoped, researched and built a proof-of-concept generator that does the wiring automatically, so the remaining work is checking it rather than building it.",
+      "The robots in Hyundai's Singapore factory run on programs written in Kawasaki AS, a low-level language, in files that run to tens of thousands of lines. The simulation software, NVIDIA Isaac Sim, works more like a flow chart: you connect blocks for things like moving the arm or picking up a part with the suction cup. To simulate a robot, an engineer had to read through its source code and rebuild it by hand as one of these flow charts, called an action graph. That took about a week per subprogram, and a single cell of the factory has more than forty. In the last three months of my internship I built a tool to speed that up.",
     sections: [
       {
-        heading: "Scoped alone from a one-line brief",
+        heading: "How it works",
         body: [
-          "The brief was a single sentence: automate the authoring of Action Graphs from robot programs. No acceptance criteria, no prior art inside the team, no spec. I started by writing down the existing manual workflow step by step with its pain points, defined the problem boundaries myself, and reviewed them with the team lead. That was a different kind of work from my first three months, where the features were already defined.",
-          "Before committing to an approach I evaluated seven candidates, including a hand-written deterministic parser, a local LLM, Copilot-style assistants, a custom API pipeline, and an LLM agent working from structured documentation. A hand-written parser is the most predictable, but Kawasaki AS programs have far too many edge cases to cover with rules written in advance.",
-          "So I split the problem in two. An LLM agent writes the generator, and the generator itself is plain Python: each script builds the same node every time it runs, so it can be read, diffed and reviewed like any other code. The authoring is where the uncertainty lives, and an engineer still verifies every generated graph before it is trusted, because the output drives the motion of a physical factory robot.",
-          "Nothing in the setup is tied to one model. Everything the agent needs lives in plain files in the repository, so the team can swap the model underneath without rewriting anything: a company model, a local one, or an open-weight model self-hosted on the GPU cluster if cost or data policy calls for it. For the proof of concept I used Claude Code inside VS Code, the team's editor, because it gave the best results; the internal AI assistant was also available but weaker at this.",
-          "The agent ran on my regular workstation, which could not run Isaac Sim, so I copied the generated scripts over SFTP to the air-gapped GPU cluster to test them and build the nodes. The full-time engineers had workstations that could run Isaac Sim directly, so that round trip was an intern-sized problem.",
+          "I compared seven ways of doing it and built small versions of a few. A normal parser that converts the code using fixed rules was the obvious option, but the robot code varies too much to write all the rules in advance. An AI agent handled that variety much better.",
+          "Isaac Sim can run Python, so the agent writes a Python script that builds the action graph, and the same script builds the same graph every time. The question then became how to get the agent to write good Python. The answer was to give it as much context as I could: rules for translating AS code into graph structures, a list of the blocks the team had already built, style guides, and examples I had checked by hand.",
+          "All of that lives as plain files in the team's repository, so they can keep adding rules and examples after I left, and it isn't tied to one AI model. I used Claude Code in VS Code because it gave the best results, but the company's own model, or one hosted on their GPU cluster, could work from the same files.",
         ],
       },
       {
-        heading: "Ground truth first, generation second",
+        heading: "What was hard",
         body: [
-          "I hand-built a correctly wired compound node for the wiper pick sequence and had the senior developer validate it: node structure, joint correction values, fork and join patterns. That became the reference. Every generated graph was diffed against its USD output until the generated version was indistinguishable from the hand-made one.",
-          "The diffing is what surfaced four undocumented OmniGraph behaviours. og.Attribute.set() turned out to be runtime only, silently failing to persist to USD on reload. Target and relationship-typed attributes needed CreateRelationship().SetTargets() instead of the documented setter. Make Array input types reset values to zero unless the calls were sequenced in a particular order. And og.Controller.connect() simply does not work for cross-graph compound port connections, so those relationships had to be authored manually. Each one was found by reading the installed extension source, since there was no internet in that environment.",
-          "All four workarounds went into a shared helper module, codegen_utils.py, which wraps node creation, wiring, attribute setting and target-prim relationships. Any future generator script gets the fixes without rediscovering them.",
+          "Mostly figuring out how to do things in Python at all. Isaac Sim expects you to build action graphs by clicking around in its interface. There are Python ways to do the same things, but a lot of them aren't documented, so I worked them out from the installed source code. Four of them didn't behave the way the documentation says, and I put the workarounds into a shared helper file so nobody has to find them again.",
+          "The setup made it harder too. The scene wasn't fully set up yet, so moves could land slightly off from the real factory even with the right coordinates, and I couldn't properly compare the simulation against videos of the real robots. Fixing that was a separate project. The computer I wrote code on also couldn't run Isaac Sim, so every script had to be copied over to an offline GPU machine before I could test it.",
         ],
       },
       {
-        heading: "The harness is the real deliverable",
+        heading: "Where it ended up",
         body: [
-          "Most of the work went into what the agent works from, so that it produces correct graphs for AS programs it has never seen: dozens of markdown files of translation rules (this kind of AS code means this graph structure), a catalogue of the team's primitive and compound nodes, style guides, a folder of verified example scripts such as a bumper pick, and prompts for starting a new agent session in the repository. It all lives in a folder in the team's own git repository, deliberately, so the engineers keep maintaining it after I left: adding rules as new cases appear, adding primitives, and promoting new verified examples. When I finished, no vision script had been verified as a canonical example yet, which is the obvious next addition.",
-          "The same files double as the handover documentation, including every technical decision with the alternatives I rejected and the parts of Kawasaki AS semantics that matter for code generation.",
-          "To check the documentation actually worked, I drafted a user acceptance test: an engineer who has never seen the project generates a compound node using the documentation alone, with no verbal guidance. I also filed the internal AI use-case submission for the workflow, presented the concept to the VP (as slides rather than a live demo), and left behind a set of diagnostic and inspection scripts for the team.",
-          "It is still a proof of concept: verified on pick sequences rather than across all forty subprograms, and the four hours includes an engineer checking and fixing each generated graph.",
+          "By the time I left, the tool worked: you could ask it for a subprogram and it would write the script. It hadn't been tested properly across the whole cell, and an engineer still has to check and fix every graph it makes, which is where the estimate of about four hours per subprogram comes from.",
+          "The team was impressed by how much work it could save. I also presented the idea to the VP, as slides rather than a demo, and she agreed we should be using AI to speed up engineering work like this.",
         ],
       },
     ],
@@ -95,43 +90,37 @@ export const caseStudies: CaseStudy[] = [
     title: "Digital Twin Simulation Platform",
     org: "Hyundai Motor Group Innovation Center Singapore",
     role: "Digital Twin & Simulation Engineering Intern",
-    period: "Jan – Jun 2026",
+    period: "Jan – Mar 2026",
     oneLiner:
-      "Reporting infrastructure and three UI extensions for a factory digital twin, plus a traceability audit that turned a suspected code bug into a prioritised data remediation plan.",
+      "UI extensions, an automatic end-of-run report, and a parts traceability audit for the digital twin of Hyundai's EV factory.",
     metrics: [
-      { value: "3", label: "Omniverse Kit UI extensions shipped" },
-      { value: "31% → 44%", label: "asset traceability, gaps root-caused" },
-      { value: "36", label: "physical parts cross-referenced by hand" },
+      { value: "3", label: "UI extensions built in Isaac Sim" },
+      { value: "31% → 44%", label: "of parts traceable after the audit" },
+      { value: "36", label: "physical parts checked one by one" },
     ],
     stack: ["Python", "Omniverse Kit", "USD", "YAML", "Model-View-Delegate"],
     summary:
-      "Six months embedded in HMGICS's simulation team, a small specialist group building digital twin tooling on NVIDIA Isaac Sim in weekly sync with NVIDIA's own engineers. The proof of concept modelled one factory cell (FE02) end to end. I built the platform's UI surface, its reporting system, and the analysis that kept its data honest, starting from a fully offline Isaac Sim installation in a restricted network that I had to figure out and document myself, because nobody had recorded it before.",
+      "Hyundai's innovation centre in Singapore is building a digital twin of its EV factory in NVIDIA Isaac Sim. I spent my first three months on the simulation team building the parts of the platform around the simulation itself: the screens engineers use to run it, the report they get at the end, and an audit of how many parts in the scene could be traced back to the factory's other systems.",
     sections: [
       {
-        heading: "Simulation reports engineers actually read",
+        heading: "What I built",
         body: [
-          "Before this, simulation output lived in raw log files or had to be observed live. I built the system that generates and opens a self-contained HTML report at the end of every run: per-robot joint-angle charts, tool-centre-point path charts, work-target completion statistics pulled from external tables, and a parts inventory of every asset in the scene. An offline fallback mode keeps reports generating with reduced data when external services are down.",
-          "Getting this right meant understanding the full simulation lifecycle to hook the completion event without disturbing simulation state, and designing a modular data layer, YAML configuration, live data through an internal extension at runtime, CSV fallback. Along the way I fixed lifecycle bugs around stale state on scene changes and windows closed mid-simulation, and extracted CSV parsing and file loading into dedicated modules. That config-driven pattern was reused by every subsequent feature on the platform.",
+          "In January I built an extension that shows records from an internal database as tables inside Isaac Sim. The dropdown options live in a YAML file, so they can change without touching the code.",
+          "In February I built a report that is generated, and opens in the browser, at the end of every simulation run: joint angles, tool paths, work targets and a parts list, with a CSV fallback for when the external service is down. I also built the DT Sim Manager, the landing page that launches the platform's simulations.",
+          "In March I built the window for New Product Introduction simulations. I wireframed it in FigJam and went through it with the team lead before writing any code, which saved a lot of back and forth.",
         ],
       },
       {
-        heading: "Three extensions, one architecture",
+        heading: "The parts audit",
         body: [
-          "I shipped a data visualisation extension rendering live records from an internal asset system into dynamic tables inside Isaac Sim (Model-View-Delegate pattern, config-driven dropdowns for car model and station filters); the DT Sim Manager landing page, built from scratch as the entry point launching the platform's simulation flows; and the New Product Introduction window, a three-state UI (pre-setup with scenario selection and clash review, active simulation, post-simulation review) with shared state across three visually distinct layouts and a custom expandable widget for clash detection.",
-          "The NPI window was wireframed in FigJam and reviewed with the team lead before any code was written, an agreed design that measurably cut implementation iteration. I also consolidated the baseline simulation from two extensions into one and redesigned the stage-load flow around USD sublayer composition: create an empty stage, add the scene as a sublayer, flatten, apply starting configuration. Understanding why the previous template-stage approach kept failing required reading Isaac Sim's own source.",
+          "The idea was that the simulation could be a source of truth for every part in the factory. Each asset in the scene can carry a label linking it to the same part in other systems, like the logistics records or the CAD drawings. My job was to go through those systems, find the matching information and put it onto the assets in the simulation.",
+          "When I started, about 31% of parts could be traced. I tagged everything I could match and got it to 16 of 36 parts, or 44%. The rest wasn't something code could fix: the information was either missing from the other systems or had never been copied into the scene. I wrote up what would need to change to get past the 80% target.",
         ],
       },
       {
-        heading: "The traceability audit",
+        heading: "Working there",
         body: [
-          "The project target: over 80% of simulation assets traceable to identifiers in the factory's physical-parts systems. The report showed roughly 31%, and the working assumption was a code bug. I exported the full scene hierarchy to establish ground truth, 36 physical parts, cross-referenced every asset against the mapping spreadsheet (which was protected against programmatic reading, so I wrote a workaround to unlock it) and the external system records, and tagged the parts that could be matched: each asset in Isaac Sim carries a metadata tag holding its identifier in the factory's other systems, such as the logistics record number.",
-          "That took coverage to 16 of 36, or 44%. Every remaining gap was a data problem rather than a code one: identifiers that existed in the mapping file but were never written into the scene, parts with no identifier information at all, and one asset in the simulation that no external system knew about. I wrote it up with a remediation plan ordered by root cause, so the team could fix the data instead of hunting for a bug that was not there: tagging six more parts would reach 61%, and closing all twenty gaps would take coverage above 95%.",
-        ],
-      },
-      {
-        heading: "Communicating up and out",
-        body: [
-          "Beyond code: I wrote the Confluence documentation for the PoC's UI and reporting systems at a level pitched for three audiences, engineers maintaining it, line operators using it, leadership evaluating it. I produced video walkthroughs for user onboarding, and prepared a structured analysis of NVIDIA GTC 2026 announcements for the team and stakeholders, filtering a large volume of marketing-framed material down to what would actually affect the roadmap, with concrete recommendations.",
+          "The team was great and always willing to help. We had regular syncs with NVIDIA's engineers, which was cool to be part of. The hard part was the setup. The machines that ran Isaac Sim were offline, so I couldn't use AI tools on them, and every change meant copying files across before I could test anything.",
         ],
       },
     ],
@@ -144,33 +133,26 @@ export const caseStudies: CaseStudy[] = [
     role: "Software Engineering Intern",
     period: "May – Jul 2025",
     oneLiner:
-      "Three Flask microservices built as internal building blocks, so the company would stop rewriting user management, document handling and notifications on every new project.",
+      "Three backend microservices, for login, messaging and documents, that the company could plug into new projects instead of building them again each time.",
     metrics: [],
     stack: ["Python", "Flask", "Flutter", "MySQL", "JWT", "SonarQube", "Swagger", "GitLab"],
     repo: "https://github.com/ishan-agarwal-05/dms_personal",
-    repoNote: "personal rebuild",
+    repoNote: "my own rebuild, not company code",
     summary:
-      "TechFour is a software company of over a hundred people, and it had noticed a pattern: every new project rebuilt the same foundations from scratch. Login, OTP, password reset, file upload, notifications. My internship was to build those once as standalone services with clean APIs, so future projects could pull them in instead of writing them again. There was no external client. The customer was the company's own future codebases.",
+      "TechFour builds software for larger companies, and almost every project needed the same basics: a login system, a way to send emails, SMS or WhatsApp messages, and file uploads. They were being rebuilt every time. My internship was to build them once, as separate microservices that any project could plug in.",
     sections: [
       {
-        heading: "Three services, built to be reused",
+        heading: "What I built",
         body: [
-          "The user management service handles registration, JWT authentication with bcrypt hashing, OTP verification and password reset. The document service handles uploads with metadata validation, date-based organisation and lifecycle management behind an admin view. The communication service sends internal notifications out through WhatsApp and email integrations, with a cron scheduler for anything time-triggered. MySQL with connection pooling underneath, Flask on top.",
-          "Designing for reuse changes the work. Each service had to stand on its own, with no assumptions about the app calling it, which meant thinking harder about API surface than I would have for a one-off feature. I also built Flutter web clients against them, which was the fastest way to find out where an API was awkward to consume.",
+          "Three services, in Flask with MySQL. The communications service sends emails, SMS and WhatsApp messages, including OTPs, and runs scheduled jobs. It's generic enough for the other services to use. The document service handles uploading and deleting files.",
+          "The user management service covers registration, login and the landing page, and it uses the other two: OTPs come from the communications service, and profile pictures go through the document service. Each service also has an admin dashboard, since the clients' admins aren't programmers, and I built those as well.",
         ],
       },
       {
-        heading: "The process around the code",
+        heading: "What I learned",
         body: [
-          "This was my first exposure to engineering process as something deliberate rather than incidental. Work was tracked in Jira. The company had written policies for branch naming, commit messages and branching strategy, and code went through GitLab on a self-hosted instance. Every endpoint was documented in OpenAPI and served through Swagger UI as it was built, not afterwards, which quietly improved the endpoints themselves.",
-          "Quality gates ran through SonarQube with SonarScanner, self-hosted alongside the project. It checks for bugs, code smells and security vulnerabilities, and I kept working through its findings until the services came back clean. Watching a tool flag things I was pleased with is a useful corrective early on.",
-        ],
-      },
-      {
-        heading: "Learning deployment from the person who ran it",
-        body: [
-          "The most valuable part of this internship was where I happened to sit. My desk was next to Sahil Bhoyar, who ran the company's GitLab, infrastructure and deployments. For about a month he taught me something most days: Linux fundamentals, Nginx, reverse proxying, load balancing, how deployments actually reach a server. He would give me something to read up on, then later show me that exact thing running in the production environment.",
-          "That is a kind of knowledge that is hard to get from a course, because the interesting parts are the operational details nobody writes down. It is also why deployment and infrastructure stopped feeling like someone else's job to me.",
+          "This is where I learned how coding works at a company: Jira, branch and commit conventions, code review, documenting every endpoint in Swagger, and SonarQube checks before anything gets merged. They didn't expect much from interns and mostly wanted us to learn, which suited me.",
+          "The best part was where I sat, next to Sahil, who ran the company's servers, CI/CD and deployments. He'd tell me what he was about to do, give me a quick explanation and something to read at home, and then show me when he actually did it. That's how I learned Linux, firewalls, Nginx and load balancing, and how to set up a new project's repository and CI/CD pipeline.",
         ],
       },
     ],
@@ -179,57 +161,33 @@ export const caseStudies: CaseStudy[] = [
     slug: "pwc-rag",
     brief: true,
     kind: "work",
-    title: "RAG Assistant over Internal Knowledge",
+    title: "RAG Assistant",
     org: "PwC India",
     role: "AI Engineering Intern",
     period: "Dec 2024 – Jan 2025",
     oneLiner:
-      "A retrieval-augmented chatbot over several hundred internal policy and research documents, for looking up policy and for finding earlier work so teams stopped repeating research.",
+      "Six weeks with a team building a retrieval-augmented chatbot over internal documents, over the December holidays.",
     metrics: [],
     stack: ["Python", "LangChain", "LangSmith", "Streamlit", "RAG"],
-    summary:
-      "Teams at PwC kept answering the same policy questions and redoing research that already existed, because the knowledge sat in several hundred documents that couldn't be searched by meaning. I worked on a retrieval-augmented generation chatbot to fix that: ask a question, get an answer grounded in the relevant internal documents.",
-    sections: [
-      {
-        heading: "What I built",
-        body: [
-          "The pipeline was built in LangChain: ingest and chunk the documents, embed them, retrieve the passages relevant to a question, and have the model answer from those passages rather than from memory. It served two uses, looking up policy and surfacing earlier research so a team could find work that had already been done.",
-          "I used LangSmith for prompt management and for tracing and evaluating the retrieval pipeline offline, and built the chat interface in Streamlit, which made it quick to put a working prototype in front of people and change it as feedback came in.",
-        ],
-      },
-    ],
+    summary: "",
+    sections: [],
   },
   {
     slug: "quadrafort-salesforce",
     brief: true,
     kind: "work",
-    title: "HR Recruitment Platform on Salesforce",
+    title: "HR Recruitment App on Salesforce",
     org: "Quadrafort Technologies",
     role: "Software Engineering Intern",
     period: "May – Jul 2024",
     oneLiner:
-      "Three months building an HR recruitment platform on Salesforce with application tracking and role-based access, plus both Salesforce certifications earned along the way.",
+      "My first internship: a month of training for the Salesforce Administrator and Developer certifications, then building an HR recruitment app on Salesforce with the other interns.",
     metrics: [],
-    stack: ["Salesforce", "Apex", "SOQL", "Lightning", "VS Code"],
-    summary:
-      "My first internship, taken after first year. It began with structured training on the Salesforce platform, its data model and its conventions, then moved into building a genuine HR recruitment platform with the rest of the team. Three months, and the placement that taught me how a professional engineering environment actually runs.",
-    sections: [
-      {
-        heading: "Getting fluent in the platform",
-        body: [
-          "Salesforce development is its own discipline. You work within the platform's data model, its governor limits and its declarative tooling, and you write Apex where configuration cannot reach, which means learning the platform properly before you can build anything real. I worked through Salesforce's Trailhead curriculum and earned both the Administrator and Developer certifications during the internship.",
-          "Alongside that came the things nobody teaches you explicitly: setting up a development environment properly, using version control the way a team expects, and how work moves from a request to something shipped.",
-        ],
-      },
-      {
-        heading: "The platform we built",
-        body: [
-          "The team built an HR recruitment application on Salesforce: candidate application tracking through each hiring stage, and different levels of access for different employees, so an HR manager sees and can do more than other staff. Permissions were the part that needed the most care, because in a hiring system the access model is the product as much as the workflow is.",
-          "Most of the team were final-year students while I was finishing my first, which is an efficient way to learn quickly. I also got to watch the implementation of Domino's India's customer-complaints application up close, my first look at how a client deployment at national scale is planned and staged.",
-        ],
-      },
-    ],
+    stack: ["Salesforce", "Apex", "SOQL", "Lightning"],
+    summary: "",
+    sections: [],
   },
+  // ───────────────────────── PROJECTS ─────────────────────────
   {
     slug: "qa-reranker",
     kind: "project",
@@ -237,68 +195,29 @@ export const caseStudies: CaseStudy[] = [
     org: "NUS · CS4248 Natural Language Processing",
     period: "Aug – Dec 2025",
     oneLiner:
-      "Found that a fine-tuned RoBERTa already had the right answer in its top five candidates for 95% of SQuAD questions, then built a reranker that fires only when the model is unsure.",
+      "Our fine-tuned model usually had the right answer in its top five guesses but didn't rank it first, so we built a reranker that only steps in when the model is unsure.",
     metrics: [
-      { value: "84.28 → 84.40", label: "exact match, SQuAD v1.1 dev" },
-      { value: "95.1%", label: "questions with gold span in top-5" },
-      { value: "55", label: "predictions changed, 14 fixed, 1 broken" },
+      { value: "84.28 → 84.40", label: "exact match on the SQuAD v1.1 dev set" },
+      { value: "95.1%", label: "of questions had the right answer in the top five" },
+      { value: "55", label: "answers changed: 14 fixed, 1 broken" },
     ],
     stack: ["PyTorch", "Hugging Face Transformers", "RoBERTa", "Sentence-BERT"],
     repo: "https://github.com/arshinsikka/CS4248_G02_QA",
-    repoNote: "group repo · 14 of 18 commits mine",
+    repoNote: "group repo, 14 of 18 commits are mine",
     summary:
-      "An error-analysis-first NLP project (team of five): instead of throwing a bigger model at SQuAD, we measured where the headroom actually was and spent compute only there. Fine-tuned RoBERTa-base to 84.28 EM / 90.93 F1, then added a bi-encoder reranking layer that activates only when the model's own confidence margin says it might be wrong.",
+      "A group project on extractive question answering: given a passage and a question, find the span of words in the passage that answers it. We fine-tuned RoBERTa on SQuAD and got 84.28 exact match. The five of us are close friends; the others had heavy course loads or an internship that semester, so one teammate and I did the coding and experiments, and the other three wrote the report.",
     sections: [
       {
-        heading: "The headroom finding",
+        heading: "What we found",
         body: [
-          "The baseline model produces a full distribution over answer spans, but only the top one is ever used. We extracted the top-k candidates and computed oracle scores: with k=5, the gold span appears in the candidates for 95.1% of questions, and oracle exact match jumps from 84.28 to 95.11 (F1 from 90.93 to 97.08). The model wasn't failing to find answers, it was failing to rank them first.",
-          "The margin between the top two candidate scores turned out to be the signal. When the gold span is ranked first, the median margin is about 0.60; when the gold span sits at rank two, it collapses to about 0.11. Low margin means the model itself suspects it might be wrong.",
+          "Instead of only taking the model's top answer, I had it rank its top candidates and looked at where the right answer landed. For 95.1% of questions, the correct answer was somewhere in its top five. So most of its mistakes were about ranking: it found the answer but put another one first. When that happened, its top two scores were usually very close together.",
         ],
       },
       {
-        heading: "Spend compute only where the model is unsure",
+        heading: "The reranker",
         body: [
-          "The reranking rule: if the top-two margin exceeds a threshold τ, keep the top answer untouched; below it, invoke a bi-encoder (all-MiniLM-L6-v2) that rescores both candidates by cosine similarity with the question, interpolated with the baseline scores at α = 0.5. Confident predictions cost nothing extra.",
-          "The final system changed just 55 of 10,570 dev predictions, 14 became correct, 1 broke, for +0.12 EM and +0.11 F1 at near-zero marginal compute. We also ran the controls that make the result meaningful: global reranking without a margin trigger consistently hurts, reranking over top-3 or top-5 candidates hurts (more noise, no more signal), and a cross-encoder cost more without consistently winning. Negative results you can explain are worth more than a clean-looking table.",
-          "It is a small gain from a single run on the dev set, so I would not call it significant. The headroom analysis is the more useful result.",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "fake-news-fairness",
-    kind: "project",
-    title: "Fake News Detection, and the Caveat We Missed",
-    org: "NUS · CS3264 Machine Learning",
-    period: "Jan – May 2025 · rebuilt Sep 2026",
-    oneLiner:
-      "Benchmarked 18 model and feature setups on the LIAR political-claims dataset. Rebuilding it a year later, I measured what a caveat we'd missed was worth: 11 points of fake accuracy.",
-    metrics: [
-      { value: "18", label: "model and feature configurations" },
-      { value: "64.5%", label: "best result in the original project" },
-      { value: "74% to 63%", label: "once the leaked counts are replaced" },
-      { value: "~11 pts", label: "of accuracy that came from the leak" },
-    ],
-    stack: ["scikit-learn", "XGBoost", "DistilBERT", "Word2Vec", "TF-IDF"],
-    repo: "https://github.com/ishan-agarwal-05/fake-news-liar",
-    repoNote: "rebuilt from the report",
-    summary:
-      "LIAR is 12,836 short political statements from PolitiFact, each with a truthfulness label and speaker metadata. We collapsed the labels to true or false and asked two questions: how well can a model triage claims like these, and what does it cost to get there? The framing was Singapore's fact-checking setup, where POFMA and Factually both depend on manual review that happens after a claim has already spread.",
-    sections: [
-      {
-        heading: "The original ablation",
-        body: [
-          "Three feature variants per model family: the statement alone, the statement plus selected metadata (party, speaker title, subject), and a full pipeline including the speaker's five historical credibility counts. We ran these across TF-IDF and pre-trained Word2Vec, with Logistic Regression, SVMs, Random Forest, XGBoost, an MLP and a fine-tuned DistilBERT. Eighteen configurations in all.",
-          "What held up: dense embeddings beat TF-IDF on text alone, SVMs beat logistic baselines in high dimensions, and the best setup was XGBoost on Word2Vec plus party affiliation at 64.5%. That last result is also the uncomfortable one. Adding party took the same model from 62.6% to 64.5%, so its verdict on a claim depends partly on the speaker's party rather than on what was said.",
-        ],
-      },
-      {
-        heading: "Rebuilding it, and the caveat we missed",
-        body: [
-          "The original code lived on a teammate's laptop and is gone, so in September 2026 I rebuilt the project from the report. Running the full sweep, tree models on the credibility counts jumped to around 73%, far past anything in the report. A jump that large, only for flexible models, usually means the model found a shortcut, so I went looking for one.",
-          "The shortcut turned out to be documented. LIAR's own README says the credibility counts include the statement being classified, and our team never read that line. The effect is easy to see once you know: when a speaker's counts add up to one, that count is the statement's own label in every test case, and a counts-only model is 94% accurate on speakers with no other history but 65% on speakers with eleven or more. That is a model reading answers off a table.",
-          "The fix is to build speaker history the way a real system would see it: the label mix of the speaker's other training statements only. With that, the full model drops from 74.3% to 63.4%. About eleven of the twelve points were the leak; honest speaker history is worth roughly one. Our original logistic regression barely touched the raw counts, so the report's numbers still stand.",
+          "So we only rerank when the gap between the top two scores is small, below 0.05. In those cases a second, smaller model scores both candidates against the question, and that score is blended with the original. Confident answers are left alone, so they cost nothing extra.",
+          "It changed 55 of the 10,570 answers: 14 went from wrong to right and 1 from right to wrong, which took exact match from 84.28 to 84.40. That's a small gain from a single run, so I wouldn't call it significant. Reranking every question, or reranking the top three or five instead of the top two, made results worse.",
         ],
       },
     ],
@@ -310,84 +229,25 @@ export const caseStudies: CaseStudy[] = [
     org: "Co-founder · EdTech startup",
     period: "Feb – Dec 2025",
     oneLiner:
-      "Co-founded a platform turning lecture recordings into AI-generated study notes. Led full-stack development, ran customer discovery across NUS cohorts, and made the call to wind it down.",
+      "A startup I co-founded with two friends that turned lecture recordings into study notes. The notes were good, but getting into universities was going to take years.",
     metrics: [],
     stack: ["Python", "Celery", "Redis", "FFmpeg", "React", "LLM APIs", "Alembic"],
     repo: "https://github.com/arshinsikka/lectureai-mvp",
     repoNote: "on a co-founder's account",
     summary:
-      "The most instructive project I've done, because it failed for a reason worth understanding: the product worked, and the market could not adopt it. Three co-founders, ten months, a real pipeline, real customer discovery, and a deliberate ending.",
+      "LectureAI started with an email from the NUS School of Computing about a startup programme. Arshin, a good friend who's really into startups, asked if I wanted to do it with him, and with Vidushi we came up with the idea: take a lecture recording and turn it into proper study notes. That programme rejected us, but BLOCK71 accepted us into its incubator.",
     sections: [
       {
-        heading: "Build",
+        heading: "What we built",
         body: [
-          "The pipeline took a raw lecture recording and produced structured study notes: FFmpeg audio processing, transcription, then LLM-based structuring into summaries and study materials, run asynchronously through a Celery task queue over Redis, because an hour-long lecture doesn't process inside an HTTP request. A Python backend with Alembic-managed migrations, a React frontend, and the operational glue between them. I led full-stack development.",
-          "The technically interesting decision was splitting correction from summarisation. A summariser fed a corrupted transcript produces a clean, well-organised summary of the wrong thing, so we used lecture slides as reference material to fix technical terminology in the transcript first, then summarised. Error propagation is a pipeline design problem, not a model problem.",
+          "We surveyed students first, and it was a real problem. Then we built the pipeline: process the audio with FFmpeg, transcribe it, fix technical terms in the transcript using the lecture slides, and have an LLM turn the result into structured notes. It all ran in the background with Celery and Redis, since an hour-long lecture takes a while. I led the full-stack development, and the notes it produced were really good.",
         ],
       },
       {
-        heading: "Discovery, and what it said",
+        heading: "Why we stopped",
         body: [
-          "I ran customer discovery across NUS student cohorts while we built. The product did what it promised, but we never found product-market fit, and one problem sat underneath everything: lecture recordings contain other students' voices, which in Singapore brings real data-protection consent requirements. Adoption kept running into that before it got to the product.",
-        ],
-      },
-      {
-        heading: "The wind-down call",
-        body: [
-          "We decided to wind it down in December 2025 rather than let it drift. The lesson I took is that how a product can legally be adopted is a question for the first month, not something to work out after the pipeline is built.",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "bundl",
-    brief: true,
-    kind: "project",
-    title: "Bundl",
-    org: "NUS Orbital · full-stack",
-    period: "May – Aug 2024",
-    oneLiner:
-      "A web app for pooling food delivery orders so people share one delivery fee: browse restaurants, see what others are ordering, and chat in real time to coordinate.",
-    metrics: [],
-    stack: ["React", "Node.js", "Express", "Socket.IO", "MongoDB", "Material-UI"],
-    repo: "https://github.com/ritulkrsingh/Bundl",
-    repoNote: "on my teammate's account",
-    summary:
-      "Built for NUS Orbital (the university's summer software programme): delivery fees are a fixed cost that nobody coordinates away, so Bundl lets users browse restaurants, see what people nearby are ordering, and bundle orders together, splitting the fee and cutting packaging waste.",
-    sections: [
-      {
-        heading: "How it works",
-        body: [
-          "Users build a cart from one or more restaurants, browse the open orders other users have placed, grouped by restaurant, and message each other through built-in chat to agree on a shared order. Chat runs over Socket.IO so messages arrive live. MongoDB stores users, restaurants, carts and chats; Express serves the API; the front end is React with Material-UI.",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "teachers-pet",
-    brief: true,
-    kind: "project",
-    title: "Teacher's Pet",
-    org: "NUS · CS2103T Software Engineering",
-    period: "Sep – Dec 2024",
-    oneLiner:
-      "A Java desktop app for NUS teaching assistants, student records, attendance, grading tasks and queries, built brownfield on a ~6,000-line existing codebase with CI and automated tests.",
-    metrics: [],
-    stack: ["Java", "JavaFX", "Gradle", "JUnit", "GitHub Actions"],
-    repo: "https://github.com/ishan-agarwal-05/tp",
-    summary:
-      "CS2103T teaches software engineering the honest way: you inherit a working ~6,000-line codebase (AddressBook-Level3) and evolve it as a team, with forking workflows, code review, CI, and documentation standards. Our product, Teacher's Pet, targets teaching assistants juggling student queries, attendance and grading across large classes.",
-    sections: [
-      {
-        heading: "What it does",
-        body: [
-          "Student contact management with add/edit/delete/list, attendance tracking, per-student comments, task prioritisation for grading work, name- and class-based filtering to find anyone fast, and a random-student generator for cold-calling in tutorials. A CLI-first interface optimised for speed, with a JavaFX GUI over it.",
-        ],
-      },
-      {
-        heading: "What it taught",
-        body: [
-          "Working brownfield is the skill: reading an unfamiliar object-oriented design before changing it, keeping tests green through refactors, writing user and developer guides as part of the deliverable, and shipping through pull requests with review. It is the closest a university module gets to how software teams actually operate.",
+          "The next step was getting into universities, through things like Canvas integrations or pilots. That turned out to mean a lot of paperwork and a very slow process, probably two or three years before anything happened. We reached out to a lot of people and didn't hear back from many. Around the same time TurboScribe, a well-funded competitor, took off with students directly.",
+          "So in December 2025 we wrapped it up. I learned a lot from it, from pitching and presenting to building the pipeline.",
         ],
       },
     ],
@@ -399,32 +259,29 @@ export const caseStudies: CaseStudy[] = [
     org: "NUS · EG1311 Design & Make",
     period: "Feb – Mar 2025",
     oneLiner:
-      "An Arduino robot that crosses a bump and a slope, finds its own firing position with an ultrasonic sensor, launches a ping-pong ball over a 30cm wall, and reverses back to the start.",
+      "An Arduino robot that drives over a bump and up a slope, stops at a wall, launches a ping-pong ball over it and reverses back to the start, on its own.",
     metrics: [],
     stack: ["Arduino", "C++", "HC-SR04", "L293D", "Servo", "Fusion 360", "Laser cutting"],
     repo: "https://github.com/ishan-agarwal-05/eg1311-robot",
+    photos: [
+      { src: "/photos/eg1311-robot.jpg", w: 1280, h: 960, alt: "The finished robot held up on the course table, with the ball holder raised", caption: "The robot on test day." },
+      { src: "/photos/eg1311-robot-top.jpg", w: 1280, h: 960, alt: "The robot from above: Arduino, breadboard, motors and servo, with a lot of wires", caption: "From above. The wiring was as messy as it looks." },
+      { src: "/photos/eg1311-circuit.jpg", w: 1600, h: 897, alt: "Tinkercad circuit: Arduino Uno, HC-SR04 ultrasonic sensor, two L293D H-bridges driving three DC motors, and a servo on a 9V supply", caption: "The circuit as I designed it in Tinkercad." },
+    ],
     summary:
-      "The course was a 3cm bump, a 10cm slope and a 30cm wall. The robot had to cross all of it, stop at the wall, launch a ping-pong ball over it and reverse back to the start, with no human input. A team of us designed and built it: laser-cut wheels, a polypropylene chassis, a servo catapult and the firmware.",
+      "EG1311 is the Design and Make module. The course was a 3 cm bump, a 10 cm slope and a 30 cm wall, and the robot had to get across, launch a ping-pong ball over the wall and come back, with nobody touching it. The rest of my team weren't CS students, so I wrote all the code and designed the circuit. It was a lot of fun.",
     sections: [
       {
-        heading: "Sensing instead of counting seconds",
+        heading: "How it works",
         body: [
-          "The easy version of this drives forward for a fixed time and fires. It fails as soon as the carpet grips differently or the battery sags, because it has no idea where it actually is. Instead the robot pulses an HC-SR04 ultrasonic sensor every loop, times the echo, and converts it to a distance. When the reading enters a narrow band near the wall it stops, waits three seconds for the chassis to settle, sweeps the servo to launch, then reverses.",
-          "Mounting that sensor was its own problem. Too low and the bump or the ramp reads as an obstacle and the robot stops halfway through the course. We raised it on a propylene board braced with two ice-cream sticks, which is not elegant and worked perfectly.",
+          "Instead of driving for a set number of seconds, the robot checks an ultrasonic sensor on every loop to measure how far it is from the wall. When it's close enough, it stops, waits three seconds to settle, swings a servo to launch the ball, and reverses. The three drive motors run off two L293D motor drivers, all from one 9V battery.",
         ],
       },
       {
-        heading: "Four wheels before one worked",
+        heading: "What went wrong",
         body: [
-          "Cardboard wheels at 8cm could not get over the 3cm bump: too small to carry the robot up and over. Laser-cut acrylic at 10cm cleared the bump and ran straight, being identical to each other, but slid helplessly on the slope because acrylic on a ramp has almost no grip. Rubber bands added traction and then peeled off, since the surface is too smooth for hot glue to hold. Anti-slip mat strips finally stuck and gripped, and that was the wheel we ran.",
-          "The ball holder went through the same loop. Flat, the ball fell out whenever the robot tilted. We ended up tilting the holder past 90 degrees from its launch angle, raising it, and giving the rim a curved inward lip: stiff enough to hold the ball through the bumps, soft enough to release it when the servo fires.",
-        ],
-      },
-      {
-        heading: "When the fix is mechanical",
-        body: [
-          "The robot kept veering right. The cause was not the code: the front-right motor was simply weaker than the other two. We tested motor speeds to confirm it, then corrected it by angling both front wheels very slightly left so the drift cancelled out. A software fix would have been more satisfying and a lot slower.",
-          "Power was the other one. A 9V for the Arduino plus a separate 6V AA pack for the motor driver looked sensible and produced motors that stuttered or refused to spin, because the pack could not deliver enough current. Running a single 9V in parallel to both fixed it and simplified the circuit. Loose twisted wires shorting on the breadboard got replaced with a proper detachable connector.",
+          "A lot. The wires were finicky and kept coming loose, so it failed plenty of times in testing. We went through four sets of wheels before one could get over the bump and up the slope, and ended up sticking anti-slip mat on them for grip. The sensor had to be raised so it wouldn't mistake the bump for the wall, and the robot kept veering right because one motor was weaker, which we fixed by angling the front wheels slightly.",
+          "On the day, it worked, and I got an A+ for the robot's run.",
         ],
       },
     ],
@@ -434,36 +291,70 @@ export const caseStudies: CaseStudy[] = [
     kind: "project",
     title: "EduCrypto",
     org: "NUS · CS4236 Cryptography in Practice",
-    period: "Aug 2026, in progress",
+    period: "Aug 2026 – now",
     oneLiner:
-      "A cryptography library built primitive by primitive across a semester, paired each week with an attack that breaks a service using that primitive badly.",
+      "A Python cryptography library I'm building for CS4236, one piece a week, each followed by breaking into a server that uses it badly.",
     metrics: [],
     stack: ["Python", "pytest", "Flask", "cryptography"],
-    repoNote: "private until the semester ends, by course policy",
+    repoNote: "private until the course ends, by course policy",
     summary:
-      "CS4236 was recently redesigned away from proving theorems and toward using cryptography correctly in real systems: reading an application's security requirements, choosing the right primitive, picking a sound library implementation, and getting the parameters right. The semester's spine is a library called educrypto that I build up week by week, and the reason it sticks is that every primitive I implement, I then have to attack.",
+      "I got into security because CTFs sounded fun. I still haven't done one, but I took CS2107, got an A, and liked it enough to make cybersecurity one of my specialisations, which is how I ended up in CS4236. Each week the course teaches something, we add it to our own cryptography library, and then they set up a server that uses it with a vulnerability, and I have to get in.",
     sections: [
-      {
-        heading: "How the semester is structured",
-        body: [
-          "Each week the module publishes three things: a feature request with an API and its behavioural requirements, a public pytest suite, and a deliberately vulnerable service that uses the library. I implement the primitive into educrypto so the tests pass, then write the attack that breaks the service built on top of it. Both halves live in the same repository, the library under src/educrypto and the attacks in their own module.",
-          "The vulnerable services are small Flask applications, which is a pointed choice. The bug is never in the mathematics. It is in how the primitive got used: a reused key, a parameter left at its convenient default, ciphertext nobody authenticated, an API that made the unsafe call the easy one.",
-        ],
-      },
       {
         heading: "So far",
         body: [
-          "Five weeks in, the library has encoding and the one-time pad; a configurable substitution-permutation block cipher; block cipher modes, broken where CBC ran with a fixed key and IV so the first ciphertext block gave away which message had been encrypted; CMAC and a second, deliberately leaky MAC, beaten with a forgery in the unforgeability game; and hashing built three ways (Davies-Meyer, Merkle-Damgård and a sponge), with collisions found for both targets.",
-        ],
-      },
-      {
-        heading: "Where it ends up",
-        body: [
-          "By December this should be a working Python cryptography package covering symmetric encryption and its modes, message authentication and hashing, then the public-key half: RSA, Diffie-Hellman key exchange, El Gamal, and digital signatures, each with a matching attack demonstrating the failure mode when it is deployed carelessly. The later part of the course moves toward how these compose into real protocols, and where cryptography sits in modern systems like blockchain and privacy-preserving machine learning.",
-          "It builds on CS2107, the information security module, which is where the threat-modelling half of my thinking came from. This one is the implementation half.",
+          "We're still on symmetric-key cryptography, where both sides share the same key. One I remember is a MAC forgery: the server's MAC didn't mix the secret key in properly, so it was effectively a known hash, and I could change a message and make a valid tag for it myself.",
+          "So far the library has the one-time pad, a block cipher, block cipher modes, MACs and hash functions, each with an attack to go with it. Public-key cryptography, like RSA and digital signatures, comes later in the semester.",
         ],
       },
     ],
+  },
+  {
+    slug: "fake-news-fairness",
+    brief: true,
+    kind: "project",
+    title: "Fake News Detection",
+    org: "NUS · CS3264 Machine Learning",
+    period: "Jan – May 2025",
+    oneLiner:
+      "A group project comparing 18 combinations of models and features for sorting political claims in the LIAR dataset into true and false. The best reached 64.5%.",
+    metrics: [],
+    stack: ["scikit-learn", "XGBoost", "DistilBERT", "Word2Vec", "TF-IDF"],
+    repo: "https://github.com/ishan-agarwal-05/fake-news-liar",
+    repoNote: "rebuilt from the report",
+    summary: "",
+    sections: [],
+  },
+  {
+    slug: "bundl",
+    brief: true,
+    kind: "project",
+    title: "Bundl",
+    org: "NUS Orbital · with Ritul",
+    period: "May – Aug 2024",
+    oneLiner:
+      "A web app for pooling food delivery orders to split the delivery fee, with live chat to coordinate. We'd never built a front end or back end before and wrote it without AI, which is how I learned both.",
+    metrics: [],
+    stack: ["React", "Node.js", "Express", "Socket.IO", "MongoDB"],
+    repo: "https://github.com/ritulkrsingh/Bundl",
+    repoNote: "on Ritul's account",
+    summary: "",
+    sections: [],
+  },
+  {
+    slug: "teachers-pet",
+    brief: true,
+    kind: "project",
+    title: "Teacher's Pet",
+    org: "NUS · CS2103T Software Engineering",
+    period: "Sep – Dec 2024",
+    oneLiner:
+      "The CS2103T team project: a Java desktop app for teaching assistants to manage students, attendance and grading, built on an existing codebase to the module's requirements.",
+    metrics: [],
+    stack: ["Java", "JavaFX", "Gradle", "JUnit", "GitHub Actions"],
+    repo: "https://github.com/ishan-agarwal-05/tp",
+    summary: "",
+    sections: [],
   },
   {
     slug: "this-site",
@@ -473,21 +364,12 @@ export const caseStudies: CaseStudy[] = [
     org: "ishan-agarwal.com",
     period: "Aug 2026",
     oneLiner:
-      "The site you're reading. Next.js, statically generated, with a command palette and a d20 that knows twenty things.",
+      "Built to help me get a job. The Ask page is an AI agent that answers questions about me using only what's on this site, an idea I got from a friend's website.",
     metrics: [],
-    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Claude API"],
+    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Claude API"],
     repo: "https://github.com/ishan-agarwal-05/portfolio",
-    summary:
-      "A portfolio should demonstrate engineering, not just describe it. Every page here is statically generated from a single typed data model; the interactive pieces, the command palette and the ask-me agent, are working software, not decoration.",
-    sections: [
-      {
-        heading: "Decisions",
-        body: [
-          "All content lives in one typed TypeScript data model, case studies, experience, honours, even the d20 facts, so the pages, the command palette index and the agent's knowledge all derive from the same source of truth. Add a project once, and every surface knows about it.",
-          "The ask-me agent is the only server-side piece: a rate-limited API route over the Claude API whose system prompt is generated from that same data model, so it can never claim something the site doesn't say. Light and dark themes are hand-built with CSS variables rather than a component library, and the type is Newsreader over Hanken Grotesk with JetBrains Mono for the machinery.",
-        ],
-      },
-    ],
+    summary: "",
+    sections: [],
   },
 ];
 
@@ -499,7 +381,7 @@ export const experiences: Experience[] = [
     location: "Singapore",
     stack: ["Python", "NVIDIA Isaac Sim", "OmniGraph", "USD"],
     summary:
-      "Six months on the simulation team building digital twin tooling for an EV smart factory. Shipped the reporting system and three UI extensions, then scoped and built an AI code-generation workflow, an LLM agent working from a harness I wrote, that takes a robot subprogram from about a week of manual wiring down to an afternoon of review.",
+      "Six months on the simulation team building a digital twin of the EV factory in NVIDIA Isaac Sim. For the first three months I built UI extensions and a report generated after every simulation run. For the last three, I built a tool that uses an AI agent to turn robot programs into simulation logic, work that used to take an engineer about a week per program.",
     articles: [
       { label: "Action Graph Code Generator", slug: "action-graph-generator" },
       { label: "Digital Twin Platform", slug: "digital-twin-platform" },
@@ -512,8 +394,8 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Python", "Flask", "Flutter", "MySQL"],
     summary:
-      "Built three Flask microservices as internal building blocks for a 100-person company that kept rewriting the same foundations: auth and OTP, documents, notifications. SonarQube gates, OpenAPI docs, and a month of daily lessons on Linux, Nginx and deployment from the engineer who ran the company's infrastructure, with reading homework he then showed me working in production.",
-    articles: [{ label: "Plug-and-Play Microservices", slug: "techfour-dms" }],
+      "Built three backend microservices the company could reuse across projects: login and user management, messaging (email, SMS and WhatsApp), and document uploads, each with an admin dashboard. I also sat next to the engineer who ran their deployments and learned a lot about Linux, Nginx and CI/CD from him.",
+    articles: [{ label: "Reusable Backend Microservices", slug: "techfour-dms" }],
   },
   {
     org: "PwC India",
@@ -522,7 +404,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Python", "LangChain", "LangSmith", "Streamlit"],
     summary:
-      "Worked on a retrieval-augmented assistant over several hundred internal policy and research documents, with LangSmith for prompt management, tracing and offline evaluation.",
+      "Six weeks with a team building a retrieval-augmented chatbot over internal documents. With the December holidays in the middle, most of it was onboarding and training, getting to know the team's work and code.",
     articles: [],
   },
   {
@@ -532,7 +414,7 @@ export const experiences: Experience[] = [
     location: "India",
     stack: ["Salesforce", "Apex"],
     summary:
-      "First internship, taken after first year. Built an HR recruitment platform on Salesforce with application tracking and different access levels for different employees, such as HR managers. Earned both Salesforce certifications during the placement.",
+      "My first internship, after first year. The first month was training, and I got the Salesforce Administrator and Developer certifications. Then, with the other interns, I built an HR recruitment app on Salesforce, with application tracking and different access for HR managers and other staff.",
     articles: [],
   },
 ];
@@ -567,95 +449,105 @@ export const honours = [
       "National Talent Search Examination, the Government of India's national scholarship exam. Stage II merit holder.",
   },
   {
-    title: "FTRE · All India Rank 49",
-    detail:
-      "FIITJEE Talent Reward Examination: 100% scholarship and fee waiver worth about ₹6,00,000.",
-  },
-  {
-    title: "ANTHE · All India Rank 98",
-    detail:
-      "Aakash National Talent Hunt Examination: 100% fee waiver plus scholarship.",
-  },
-  {
     title: "VVM · State Rank 1 (Uttar Pradesh)",
     detail:
-      "Vigyan Vidyarthi Manthan, a Government of India (DST & NCERT) science talent initiative. Honoured by state education officials.",
+      "Vigyan Vidyarthi Manthan, a national science talent search run by the Government of India.",
   },
   {
     title: "Odyssey of the Mind · 3rd internationally",
     detail:
-      "Eurofest, St. Petersburg. Led the team from ideation to final execution as primary developer of the robot.",
+      "Eurofest in St. Petersburg, in Grade 9. I built and programmed our robot. It was the first robot I ever built, and it's what made me want to be an engineer.",
+  },
+  {
+    title: "FTRE · All India Rank 49",
+    detail: "FIITJEE Talent Reward Examination, with a full scholarship worth about ₹6,00,000.",
+  },
+  {
+    title: "ANTHE · All India Rank 98",
+    detail: "Aakash National Talent Hunt Examination, with a full fee waiver and scholarship.",
   },
   {
     title: "Cambridge C2 Proficiency · Grade A",
-    detail: "The highest level of English certification, at the highest grade. IELTS 8.0.",
+    detail: "The highest level of Cambridge English certification. IELTS 8.0.",
   },
   {
     title: "Salesforce Administrator & Developer",
-    detail: "Both platform certifications, earned during my first internship.",
+    detail: "Both certifications, earned during my first internship.",
   },
   {
     title: "Academic scholarships",
     detail:
-      "Full tuition scholarship at Mayoor School for ranking first in the batch three years running; later 98% in Class 12 at Amity International.",
+      "Full tuition scholarship at Mayoor School for ranking first in my batch three years running, then 98% in Class 12 at Amity International.",
   },
 ];
 
 export const ttrpgSystems = [
-  { name: "D&D 5e", note: "long campaigns" },
-  { name: "Call of Cthulhu", note: "plans falling apart" },
-  { name: "Monster of the Week", note: "one mystery a session" },
-  { name: "FIST", note: "paranormal mercenaries" },
-  { name: "Traveller", note: "spreadsheets in space" },
+  { name: "D&D 5e" },
+  { name: "Call of Cthulhu" },
+  { name: "Monster of the Week" },
+  { name: "FIST" },
+  { name: "Traveller" },
 ];
 
 export const reading = [
-  { name: "Lord of the Mysteries", note: "webnovel" },
-  { name: "Shadow Slave", note: "webnovel" },
-  { name: "One Piece", note: "still going" },
-  { name: "SFF", note: "the standing habit" },
+  { name: "Lord of the Mysteries" },
+  { name: "Shadow Slave" },
+  { name: "One Piece" },
 ];
 
-export const beyond = [
+export type Photo = { src: string; w: number; h: number; alt: string; caption?: string };
+
+export const beyond: { title: string; body: string; photos?: Photo[] }[] = [
   {
     title: "Tabletop RPGs",
-    body: "Always at the table, never behind the screen. I play rather than run, which means turning up, reading the room, committing to a character and living with the dice. D&D 5e for the long campaigns, Call of Cthulhu when the plan is meant to fall apart, Monster of the Week for a mystery in one sitting, FIST for paranormal mercenary work with almost no prep, and Traveller for the joy of a spreadsheet in space.",
+    body: "I'll play almost any system, not just D&D. Lately it's been Call of Cthulhu. I've never been the GM. At the table I'm pretty cooperative, and I nearly always play a big, physical character rather than a mage. It's an escape, a reason to hang out with friends, and we end up making a good story together. It fits with how much fantasy I read. I also draw for our campaigns and characters.",
+    photos: [
+      { src: "/photos/art-forest.jpg", w: 712, h: 1400, alt: "Coloured pencil drawing of a small figure on a path through a glowing blue forest under a swirling moon", caption: "Coloured pencil, for a campaign." },
+      { src: "/photos/art-shadow-and-her-light.jpg", w: 1143, h: 1400, alt: "Blue pen sketch of a hooded character holding a small light, titled The Shadow and Her Light", caption: "The Shadow and Her Light. Pen on lined paper." },
+      { src: "/photos/art-canary-crest.jpg", w: 990, h: 1400, alt: "Pencil sketch of a heraldic crest with a canary on a shield and a banner reading Canary", caption: "A crest for a character's family." },
+    ],
   },
   {
     title: "Reading",
-    body: "Constantly, and not fussy about the form. Science fiction and fantasy, plus a long-running habit with webnovels and manga: Lord of the Mysteries, Shadow Slave, One Piece. Serialised fiction is an interesting thing to follow as an engineer, because you watch a writer maintain state and pay off setup across thousands of chapters, mostly without notes.",
+    body: "Reading is basically an addiction for me. Not physical books: web novels, mostly fantasy, cultivation and regression stories, a lot of them Korean and Chinese, on Royal Road and reading apps.",
   },
   {
     title: "Travel",
-    body: "Over thirty countries so far, and at least one trip a year with my family. Much of Europe, including Scandinavia and the centre, west and south, along with North America, South Africa and Japan most recently. It is the fastest way I know to find out that the way something is done at home is not the only way it could be done.",
+    body: "I love travelling, and so does my family. We go somewhere about twice a year. In the last three years that's been Bali, Vietnam, the UK, Scandinavia, South Africa, Japan, Malaysia and a lot of places in India.",
+    photos: [
+      { src: "/photos/travel-skye.jpg", w: 1600, h: 900, alt: "Green hills, cliffs and a winding road at the Quiraing on the Isle of Skye", caption: "Isle of Skye, Scotland." },
+      { src: "/photos/travel-kyoto-river.jpg", w: 1600, h: 900, alt: "Ishan smiling in front of a river in Kyoto at dusk", caption: "Kyoto." },
+      { src: "/photos/travel-fuji.jpg", w: 788, h: 1400, alt: "Ishan standing in a street with Mount Fuji behind him", caption: "Mount Fuji." },
+      { src: "/photos/travel-nara.jpg", w: 788, h: 1400, alt: "Ishan crouching next to a resting deer in Nara park", caption: "Nara, with a deer." },
+    ],
   },
   {
-    title: "Teaching and volunteering",
-    body: "With Teach SG I volunteer with at-risk youth, placed at Choa Chu Kang Secondary with Sec 1 and 2 students. There is some tutoring, but most of it is about social and behavioural skills rather than schoolwork. I missed sessions while I was away in July, so from late September to early November I'm making them up at Dazhong Primary. Before university I volunteered with SETU under the Each One Teach One initiative.",
+    title: "Teach SG",
+    body: "I volunteer with Teach SG, working with Sec 1 and 2 students at Choa Chu Kang Secondary, and this term at Dazhong Primary too. There's some teaching, but it's mostly mentoring. It's been a really good experience and I'd recommend it to anyone. Before university I volunteered with SETU under the Each One Teach One initiative.",
   },
 ];
 
 export const d20Facts = [
-  "I play D&D 5e, Call of Cthulhu, Monster of the Week, FIST and Traveller. Always a player, never the DM.",
-  "Natural 20! I once worked out four undocumented OmniGraph API behaviours by diffing USD files in an air-gapped network.",
-  "Six years of formal Indian classical music training, now applied to the keyboard.",
-  "All India Rank 21 in the NTSE, India's national talent search examination.",
-  "Third place internationally at Odyssey of the Mind in St. Petersburg, as the robot's primary developer.",
-  "I volunteer with Teach SG, mentoring at-risk Sec 1 and 2 students.",
-  "Cambridge C2 Proficiency, Grade A, the examiner's way of saying I will not stop talking.",
-  "I co-founded a startup and made the call to shut it down. Best judgement rep I've ever earned.",
-  "All India Rank 49 in FTRE, worth a ₹6,00,000 scholarship.",
-  "I speak English, Hindi, and a little German.",
-  "Minoring in both Mathematics and Quantitative Finance alongside CS.",
-  "My favourite bug hunt: proving a 31% traceability number was a data problem, not a code problem.",
-  "I evaluated seven ways to turn robot programs into simulation code, then built the one where an AI agent writes it.",
-  "I've worked in an air-gapped network, no Stack Overflow, just source code and patience.",
-  "Focus areas: Artificial Intelligence and Computer Security.",
-  "I wireframe UIs before coding them. It has never once been a waste of time.",
+  "I've played D&D 5e, Call of Cthulhu, Monster of the Week, FIST and Traveller. Never as the GM.",
+  "At Hyundai I found four Isaac Sim Python behaviours that don't work the way the docs say.",
+  "Six years of Indian classical music training, now played on the keyboard.",
+  "All India Rank 21 in the NTSE, India's national talent search exam.",
+  "Third place internationally at Odyssey of the Mind. Building that robot is what made me want to be an engineer.",
+  "I volunteer with Teach SG, mentoring secondary school students.",
+  "Cambridge C2 Proficiency, Grade A.",
+  "I co-founded a startup, LectureAI, and we wound it down after ten months.",
+  "All India Rank 49 in FTRE, which came with a ₹6,00,000 scholarship.",
+  "I speak English and Hindi, and a little German.",
+  "I'm minoring in both Mathematics and Quantitative Finance.",
+  "I always play the big, physical character. Never the mage.",
+  "I read web novels every day, mostly fantasy, cultivation and regression stories.",
+  "My family travels about twice a year. Japan, the UK and South Africa were some recent ones.",
+  "My specialisations are AI and cybersecurity.",
+  "I draw art for our campaigns and characters.",
   "State Rank 1 in Uttar Pradesh in VVM, a national science talent search.",
-  "I have been to over thirty countries, and I still travel with my family at least once a year.",
-  "This site's entire content lives in one typed data file. The palette and the agent both read from it.",
-  "This site has a command palette. Press ⌘K.",
+  "I've never done a CTF, even though CTFs are why I got into security.",
+  "My EG1311 robot worked on the day. It had failed plenty of times before that.",
+  "This site has a search. Press ⌘K.",
 ];
 
 // Full write-ups: internships first, then projects, read as one sequence.
@@ -673,7 +565,7 @@ export const paletteIndex = [
   { label: "Projects", href: "/#projects", group: "Sections" },
   { label: "Honours", href: "/#honours", group: "Sections" },
   { label: "Toolbox", href: "/#skills", group: "Sections" },
-  { label: "Beyond the Terminal", href: "/#beyond", group: "Sections" },
+  { label: "Beyond work", href: "/#beyond", group: "Sections" },
   ...(agentEnabled ? [{ label: "Ask the agent", href: "/ask", group: "Pages" }] : []),
   { label: "Contact", href: "/contact", group: "Pages" },
   ...articles.map((c) => ({

@@ -9,7 +9,7 @@ type Msg = { role: "user" | "assistant"; content: string };
 const suggestions = [
   "What did Ishan build at Hyundai?",
   "Why did LectureAI shut down?",
-  "What's his strongest evidence of ML work?",
+  "What did he do in the QA project?",
   "Does he have backend experience?",
   "What does he do outside of code?",
 ];
@@ -88,12 +88,12 @@ export default function AskAgent() {
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-5 pb-10 pt-32">
       <p className="microlabel text-copper">the agent</p>
       <h1 className="display-tight mt-3 font-display text-5xl text-ink sm:text-6xl">
-        Ask me anything<span className="text-copper">*</span>
+        Ask about me
       </h1>
       <p className="mt-4 max-w-xl text-sm leading-relaxed text-faint">
-        *about Ishan. Grounded in the same data model that renders this site, it
-        will say &ldquo;I don&rsquo;t know&rdquo; rather than make things up, and it knows where
-        the detailed articles live. Rate-limited, because tokens cost money.
+        An AI agent that answers questions about me using only what&rsquo;s on this site.
+        If the site doesn&rsquo;t cover something, it&rsquo;ll say so. It&rsquo;s rate-limited,
+        because every answer costs me money.
       </p>
 
       <div className="mt-8 flex-1">

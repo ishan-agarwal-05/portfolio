@@ -55,7 +55,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${display.variable} ${sans.variable} ${mono.variable} grain font-sans`}
+        className={`${display.variable} ${sans.variable} ${mono.variable} font-sans`}
       >
         <Nav />
         <CommandPalette />

@@ -11,7 +11,7 @@ export default function ProjectsSection() {
       <SectionHeading
         index="02 / projects"
         title="Projects"
-        sub="Research, product, hardware, and this site. Repos are linked where they're public."
+        sub="Coursework, a startup, and this site."
       />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((p, i) => (

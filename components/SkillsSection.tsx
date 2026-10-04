@@ -6,9 +6,9 @@ export default function SkillsSection() {
   return (
     <section id="skills" className="mx-auto max-w-content px-5 py-24">
       <SectionHeading
-        index="04 / toolbox"
+        index="03 / toolbox"
         title="Toolbox"
-        sub="Everything here has shipped something above, no keyword stuffing."
+        sub="What I've used across the work and projects above."
       />
       <div className="grid gap-10 sm:grid-cols-2">
         {skills.map((g, i) => (

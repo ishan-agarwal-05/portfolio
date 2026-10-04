@@ -9,7 +9,6 @@ import { agentEnabled, site } from "@/lib/data";
 const allLinks = [
   { label: "Work", href: "/#work" },
   { label: "Projects", href: "/#projects" },
-  { label: "Honours", href: "/#honours" },
   { label: "Beyond", href: "/#beyond" },
   { label: "Ask", href: "/ask" },
   { label: "Contact", href: "/contact" },

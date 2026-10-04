@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowDown, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { agentEnabled, site } from "@/lib/data";
 
 const container = {
@@ -26,28 +26,31 @@ export default function Hero() {
       <motion.div variants={container} initial="hidden" animate="show">
         <div className="grid items-end gap-10 lg:grid-cols-[1fr_auto]">
           <div>
-            <motion.p variants={item} className="microlabel mb-8 flex items-center gap-2">
-              <span className="inline-block h-2 w-2 bg-copper" />
-              {site.availability}
-            </motion.p>
             <motion.h1
               variants={item}
-              className="font-display display-tight text-[12vw] text-ink sm:text-[5.4rem] lg:text-[6.8rem]"
+              className="font-display display-tight text-[15vw] text-ink sm:text-[5.4rem] lg:text-[6.8rem]"
             >
-              Software that
-              <br />
-              <em className="text-copper">earns</em> its numbers.
+              Ishan Agarwal
             </motion.h1>
-            <motion.p
+            <motion.div
               variants={item}
-              className="mt-8 max-w-2xl text-lg leading-relaxed text-muted"
+              className="mt-8 max-w-2xl space-y-4 text-lg leading-relaxed text-muted"
             >
-              I&rsquo;m Ishan, final-year Computer Science student at NUS, minoring in
-              Mathematics and Quantitative Finance. Four internships across robotics
-              simulation, backend platforms and applied AI, including six months
-              building digital twin tooling at Hyundai&rsquo;s Singapore R&D centre.
-              Every claim on this site links to the work behind it.
-            </motion.p>
+              <p>
+                I&rsquo;m a final-year computer science student at NUS, minoring in mathematics
+                and quantitative finance, with specialisations in AI and cybersecurity.
+              </p>
+              <p>
+                I&rsquo;ve done four internships. The most recent was six months on the
+                simulation team at Hyundai&rsquo;s innovation centre in Singapore, working on a
+                digital twin of their EV factory. Before that I built backend services at
+                TechFour, and had shorter internships at PwC and Quadrafort.
+              </p>
+              <p>
+                I graduate in May 2027 and I&rsquo;m looking for a full-time software or AI role
+                in Singapore.
+              </p>
+            </motion.div>
             <motion.figure variants={item} className="mt-8 lg:hidden">
               <Image
                 src="/portrait.jpg"
@@ -104,13 +107,6 @@ export default function Hero() {
             </figure>
           </motion.div>
         </div>
-        <motion.div
-          variants={item}
-          className="mt-14 hidden items-center gap-2 font-mono text-[11px] text-faint sm:flex"
-        >
-          <ArrowDown size={12} className="animate-bounce" />
-          scroll, or press <span className="kbd">⌘K</span> to jump anywhere
-        </motion.div>
       </motion.div>
     </section>
   );
