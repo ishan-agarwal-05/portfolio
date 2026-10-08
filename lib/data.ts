@@ -256,7 +256,7 @@ export const caseStudies: CaseStudy[] = [
     oneLiner:
       "A startup I co-founded with two friends that turned lecture recordings into study notes. The notes were good, but getting into universities was going to take years.",
     metrics: [],
-    stack: ["Python", "Celery", "Redis", "FFmpeg", "React", "LLM APIs", "Alembic"],
+    stack: ["Python", "FastAPI", "Whisper", "FFmpeg", "React", "LLM APIs", "Celery", "Redis"],
     repo: "https://github.com/arshinsikka/lectureai-mvp",
     repoNote: "on a co-founder's account",
     summary:
@@ -266,7 +266,7 @@ export const caseStudies: CaseStudy[] = [
         heading: "What we built",
         body: [
           "We surveyed students across NUS first, and it was a real problem. Then we built the pipeline. FFmpeg processes the audio, it gets transcribed, technical terms in the transcript get corrected using the lecture slides, and then an LLM turns it into summaries and study notes. We fixed the transcript before summarising because when a transcript gets a technical term wrong, the summary repeats the wrong term with total confidence.",
-          "An hour-long lecture takes a while to process, so everything ran in the background through Celery and Redis rather than inside a web request. The backend was Python with Alembic for database migrations, and the frontend was React. I led the full-stack development, and the notes it produced were really good.",
+          "The backend was FastAPI, with Whisper for transcription and Alembic for database migrations, and the frontend was React, which ran each step in turn and showed progress as it went. Later we added a background job queue with Celery and Redis for long lectures, but the app hadn't switched over to it by the time we stopped. I led the full-stack development, and the notes it produced were really good.",
         ],
       },
       {
@@ -461,7 +461,7 @@ export const skills = [
   },
   {
     group: "Backend & Infrastructure",
-    items: ["Flask", "Node.js", "React", "Flutter", "REST APIs", "Docker", "Git", "CI/CD", "MySQL", "MongoDB", "Celery / Redis"],
+    items: ["Flask", "FastAPI", "Node.js", "React", "Flutter", "REST APIs", "Docker", "Git", "CI/CD", "MySQL", "MongoDB"],
   },
   {
     group: "AI & Data",
