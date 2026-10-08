@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Ishan Agarwal, Software Engineer",
     description:
-      "Software that has to earn its numbers. NUS CS 2027 · robotics simulation, backend, applied AI.",
+      "Final-year NUS Computer Science student. Four internships, including six months on the digital twin of Hyundai's Singapore EV factory. Graduating May 2027.",
     url: "https://ishan-agarwal.com",
     siteName: "Ishan Agarwal",
     type: "website",

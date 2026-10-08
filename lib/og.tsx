@@ -77,13 +77,10 @@ function Frame({ top, children, footer }: { top: [string, string]; children: Rea
 export async function siteCard() {
   return new ImageResponse(
     (
-      <Frame top={["ishan-agarwal.com", "NUS CS · 2027"]} footer="Robotics simulation · Backend · Applied AI">
-        <div style={{ display: "flex", flexDirection: "column", fontFamily: "Serif", fontSize: 96, lineHeight: 1.02, color: colors.ink }}>
-          <div>Software that</div>
-          <div style={{ display: "flex" }}>
-            <span style={{ color: colors.accent, fontStyle: "italic" }}>earns</span>
-            <span>&nbsp;its numbers.</span>
-          </div>
+      <Frame top={["ishan-agarwal.com", "NUS CS · 2027"]} footer="Graduating May 2027 · Singapore">
+        <div style={{ display: "flex", flexDirection: "column", fontFamily: "Serif", fontSize: 62, lineHeight: 1.12, color: colors.ink, maxWidth: 1060 }}>
+          <div>Final-year computer science at NUS.</div>
+          <div style={{ color: colors.muted }}>Four internships, most recently six months at Hyundai.</div>
         </div>
       </Frame>
     ),
